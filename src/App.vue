@@ -1,7 +1,7 @@
 <template>
-    <v-content>
-      <Menu/>
-    </v-content>
+  <v-app>
+    <Menu />
+  </v-app>
 </template>
 
 <script>

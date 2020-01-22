@@ -26,7 +26,15 @@
         :items-per-page="5"
         :search="search"
         class="elevation-0"
-      ></v-data-table>
+      >
+        <template v-slot:item.status="{ item }">
+          <v-chip small :color="getColor(item.status)" dark>{{ item.status}}</v-chip>
+        </template>
+        <template v-slot:item.acao="{ item }">
+          <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
+          <v-icon small>mdi-trash-can</v-icon>
+        </template>
+      </v-data-table>
     </v-card>
     <v-dialog v-model="dialog" persistent max-width="600px">
       <v-card>
@@ -37,7 +45,13 @@
           <v-container>
             <v-row>
               <v-col cols="12" sm="6">
-                <v-text-field dense v-model="client" outlined label="Cliente nome" required></v-text-field>
+                <v-text-field
+                  dense
+                  v-model="editedItem.name"
+                  outlined
+                  label="Cliente nome"
+                  required
+                ></v-text-field>
               </v-col>
               <v-col cols="12" outlined sm="6">
                 <v-text-field
@@ -46,13 +60,13 @@
                   outlined
                   required
                   dense
-                  v-model="phone"
+                  v-model="editedItem.tel"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
                 <v-select
                   dense
-                  v-model="type"
+                  v-model="editedItem.type"
                   outlined
                   :items="['Jurídica', 'Fisíca']"
                   label="Tipo"
@@ -60,12 +74,12 @@
                 ></v-select>
               </v-col>
               <v-col cols="12" sm="6">
-                <v-text-field v-model="doc" dense outlined label="CPF - CNPJ"></v-text-field>
+                <v-text-field v-model="editedItem.doc" dense outlined label="CPF - CNPJ"></v-text-field>
               </v-col>
 
               <v-col cols="12" sm="6">
                 <v-text-field
-                  v-model="address"
+                  v-model="editedItem.adress.street"
                   dense
                   outlined
                   label="Endereço"
@@ -75,13 +89,20 @@
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="2" md="2">
-                <v-text-field v-model="number" dense outlined label="Nº" type="text" required></v-text-field>
+                <v-text-field
+                  v-model="editedItem.adress.number"
+                  dense
+                  outlined
+                  label="Nº"
+                  type="text"
+                  required
+                ></v-text-field>
               </v-col>
 
               <v-col cols="12" sm="4">
                 <v-select
                   dense
-                  v-model="district"
+                  v-model="editedItem.adress.district"
                   outlined
                   :items="['0-17', '18-29', '30-54', '54+']"
                   label="Bairro"
@@ -90,7 +111,7 @@
               </v-col>
               <v-col cols="12" sm="8">
                 <v-text-field
-                  v-model="complement"
+                  v-model="editedItem.adress.complement"
                   dense
                   outlined
                   label="Complemento"
@@ -100,7 +121,14 @@
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="4">
-                <v-text-field v-model="cep" dense outlined label="CEP" type="text" required></v-text-field>
+                <v-text-field
+                  v-model="editedItem.adress.cep"
+                  dense
+                  outlined
+                  label="CEP"
+                  type="text"
+                  required
+                ></v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -108,7 +136,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="dialog = false">Close</v-btn>
+          <v-btn color="blue darken-1" text @click="close()">Close</v-btn>
           <v-btn color="blue darken-1" text @click="registerClient()">Save</v-btn>
         </v-card-actions>
       </v-card>
@@ -146,25 +174,48 @@ export default {
       { text: 'CPF/CNPJ', value: 'doc' },
       { text: 'Tipo', value: 'type' },
       { text: 'Status', value: 'status' },
-    ],
-    owner: "",
-    company: "",
-    adressResponsible: "",
-    adressCompany: "",
-    client: "",
-    companyname: "",
-    doc: "",
-    type: "",
-    cnpj: "",
-    phone: "",
-    address: "",
-    district: "",
-    number: "",
-    cep: "",
-    complement: ""
+      { text: 'Ações', value: 'acao', sortable: false },
 
+    ],
+    editedIndex: -1,
+    client: "",
+    desserts: [],
+    editedItem: {
+      name: '',
+      doc: '',
+      type: '',
+      cnpj: '',
+      phone: '',
+      adress: {
+        street: '',
+        district: "",
+        number: "",
+        cep: "",
+        complement: "",
+      },
+    },
+     defaultItem: {
+      name: '',
+      doc: '',
+      type: '',
+      cnpj: '',
+      phone: '',
+      adress: {
+        street: '',
+        district: "",
+        number: "",
+        cep: "",
+        complement: "",
+      },
+    },
   }),
   methods: {
+
+    getColor(status) {
+      if (status == "Ativo") return 'primary'
+      else if (status == "Inativo") return 'orange'
+      else return 'green'
+    },
     listAllCompanies() {
       const url = `${vars.host}clientController.php`
       let formData = new FormData()
@@ -191,6 +242,7 @@ export default {
         form.append('district', this.district)
         form.append('number', this.number)
         form.append('cep', this.cep)
+        form.append('complement', this.complement)
         form.append('name', this.client)
         form.append('doc', this.doc)
         form.append('tel', this.phone)
@@ -207,9 +259,10 @@ export default {
             name: this.client,
             tel: this.phone,
             doc: this.doc,
-            type: this.type
+            type: this.type,
+            status: "Ativo"
           })
-         console.log(this.idNumber)
+          console.log(this.idNumber)
 
         })
       } else {
@@ -220,6 +273,7 @@ export default {
         form.append('district', this.district)
         form.append('number', this.number)
         form.append('cep', this.cep)
+        form.append('complement', this.complement)
         form.append('name', this.client)
         form.append('doc', this.doc)
         form.append('tel', this.phone)
@@ -236,23 +290,29 @@ export default {
             name: this.client,
             tel: this.phone,
             doc: this.doc,
-            type: this.type
+            type: this.type,
+            status: "Ativo"
+
           })
         })
       }
 
     },
+    editItem(item) {
+      this.editedIndex = this.clients.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      console.log(this.editedItem);
 
-    //   let type = "juridica"
-    //   console.log(this.companyname)
-    //   console.log(this.cnpj)
-    //   console.log(this.phone)
-    //   console.log(this.address)
-    //   console.log(this.district)
-    //   console.log(this.number)
-    //   console.log(this.cep)
-    //   console.log(type)
-    // }
+      this.dialog = true
+    },
+    close () {
+        this.dialog = false
+        setTimeout(() => {
+          this.editedItem = Object.assign({}, this.defaultItem)
+          this.editedIndex = -1
+        }, 300)
+      },
+
   }
 }
 </script>

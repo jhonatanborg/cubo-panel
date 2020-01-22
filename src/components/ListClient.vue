@@ -68,7 +68,7 @@
                   dense
                   v-model="editedItem.type"
                   outlined
-                  :items="['Jurídica', 'Fisíca']"
+                  :items="['Jurídica', 'Física']"
                   label="Tipo"
                   required
                 ></v-select>
@@ -104,7 +104,7 @@
                   dense
                   v-model="editedItem.adress.district"
                   outlined
-                  :items="['0-17', '18-29', '30-54', '54+']"
+                  :items="['Centro', 'Cidade nova', 'Residencial Sul', 'Residencial Sul']"
                   label="Bairro"
                   required
                 ></v-select>
@@ -179,13 +179,26 @@ export default {
     ],
     editedIndex: -1,
     client: "",
-    desserts: [],
     editedItem: {
+      id: '',
       name: '',
       doc: '',
       type: '',
-      cnpj: '',
-      phone: '',
+      tel: '',
+      status: '',
+      adress: {
+        street: "",
+        district: "",
+        number: "",
+        cep: "",
+        complement: "",
+      },
+    },
+    defaultItem: {
+      name: '',
+      doc: '',
+      type: '',
+      tel: '',
       adress: {
         street: '',
         district: "",
@@ -194,20 +207,8 @@ export default {
         complement: "",
       },
     },
-     defaultItem: {
-      name: '',
-      doc: '',
-      type: '',
-      cnpj: '',
-      phone: '',
-      adress: {
-        street: '',
-        district: "",
-        number: "",
-        cep: "",
-        complement: "",
-      },
-    },
+    editClient: false,
+
   }),
   methods: {
 
@@ -235,18 +236,42 @@ export default {
       })
     },
     registerClient() {
-      if (this.type == "Fisíca") {
+      if (this.editClient == true) {
+        let form = new FormData()
+        form.append('edit-client', 'true')
+        form.append('id', this.editedItem.id)
+        form.append('name', this.editedItem.name)
+        form.append('tel', this.editedItem.tel)
+        form.append('doc', this.editedItem.doc)
+        form.append('status', this.editedItem.status)
+        form.append('type', this.editedItem.type)
+        form.append('street', this.editedItem.adress.street)
+        form.append('district', this.editedItem.adress.district)
+        form.append('complement', this.editedItem.adress.complement)
+        form.append('number', this.editedItem.adress.number)
+        form.append('cep', this.editedItem.adress.cep)
+        fetch(url, {
+          method: 'POST',
+          body: form
+        }).then(resp => {
+          return resp.json()
+        }).then(json => {
+          console.log(json)
+        })
+      }
+      else {
         let form = new FormData()
         form.append('register-client', 'true')
-        form.append('street', this.address)
-        form.append('district', this.district)
-        form.append('number', this.number)
-        form.append('cep', this.cep)
-        form.append('complement', this.complement)
-        form.append('name', this.client)
-        form.append('doc', this.doc)
-        form.append('tel', this.phone)
-        form.append('type', this.type)
+        form.append('street', this.editedItem.address)
+        form.append('district', this.editedItem.district)
+        form.append('number', this.editedItem.number)
+        form.append('cep', this.editedItem.cep)
+        form.append('complement', this.editedItem.complement)
+        form.append('name', this.editedItem.name)
+        form.append('doc', this.editedItem.doc)
+        form.append('tel', this.editedItem.tel)
+        form.append('type', this.editedItem.type)
+        form.append('status', "Ativo")
         fetch(url, {
           method: 'POST',
           body: form
@@ -256,62 +281,42 @@ export default {
           console.log(json.client_id)
           this.clients.push({
             id: json.client_id,
-            name: this.client,
-            tel: this.phone,
-            doc: this.doc,
-            type: this.type,
-            status: "Ativo"
+            name: this.editedItem.name,
+            doc: this.editedItem.doc,
+            type: this.editedItem.type,
+            tel: this.editedItem.tel,
+            status: "Ativo",
+            adress: {
+              street: this.adress.street,
+              district: this.adress.district,
+              number: this.adress.number,
+              cep: this.adress.cep,
+              complement: this.adress.complement,
+            },
           })
           console.log(this.idNumber)
-
-        })
-      } else {
-
-        let form = new FormData()
-        form.append('register-client', 'true')
-        form.append('street', this.address)
-        form.append('district', this.district)
-        form.append('number', this.number)
-        form.append('cep', this.cep)
-        form.append('complement', this.complement)
-        form.append('name', this.client)
-        form.append('doc', this.doc)
-        form.append('tel', this.phone)
-        form.append('type', this.type)
-        fetch(url, {
-          method: 'POST',
-          body: form
-        }).then(resp => {
-          return resp.json()
-        }).then(json => {
-          console.log(json)
-          this.clients.push({
-            id: json.client_id,
-            name: this.client,
-            tel: this.phone,
-            doc: this.doc,
-            type: this.type,
-            status: "Ativo"
-
-          })
         })
       }
+    },
 
+    regist() {
+      console.log(this.editedItem);
     },
     editItem(item) {
+      this.editClient = true
       this.editedIndex = this.clients.indexOf(item)
       this.editedItem = Object.assign({}, item)
       console.log(this.editedItem);
-
       this.dialog = true
     },
-    close () {
-        this.dialog = false
-        setTimeout(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        }, 300)
-      },
+    close() {
+      this.editClient = false
+      this.dialog = false
+      setTimeout(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      }, 300)
+    },
 
   }
 }

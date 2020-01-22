@@ -1,9 +1,9 @@
 <template>
-  <v-app id="inspire">
+  <div id="inspire">
     <v-navigation-drawer v-model="drawer" :clipped="$vuetify.breakpoint.lgAndUp" app>
       <v-list dense>
         <template >
-          <v-list-item  tag="router-link" to="clients" link>
+          <v-list-item  tag="router-link" to="clients" >
             <v-list-item-action>
               <v-icon>mdi-magnify</v-icon>
             </v-list-item-action>
@@ -19,7 +19,6 @@
       <v-toolbar-title style="width: 300px" class="ml-0 pl-4">
         <span class="hidden-sm-and-down">Cubo Painel</span>
       </v-toolbar-title>
-
       <v-spacer />
       <v-btn icon>
         <v-icon>mdi-apps</v-icon>
@@ -33,11 +32,7 @@
         </v-avatar>
       </v-btn>
     </v-app-bar>
-    <v-content>
-      <v-container>
-      </v-container>
-    </v-content>
-  </v-app>
+  </div>
 </template>
 
 <script>

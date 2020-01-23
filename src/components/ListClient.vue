@@ -1,6 +1,6 @@
 <template>
-  <div class="col-sm-12 mr-2">
-    <v-card>
+  <div>
+    <v-card class>
       <v-card-title color="red">
         Clientes
         <v-spacer></v-spacer>
@@ -36,135 +36,104 @@
         </template>
       </v-data-table>
     </v-card>
-    <v-dialog
-      v-model="dialog"
-      fullscreen
-      hide-overlay
-      transition="dialog-bottom-transition"
-      scrollable
-      persistent
-      max-width="600px"
-    >
-      <v-card tile>
-        <v-toolbar flat dense dark color="primary">
-          <v-btn icon dark @click="dialog = false">
+    <v-dialog v-model="dialog"  persistent max-width="600px" transition="dialog-bottom-transition">
+      <v-card>
+        <v-toolbar dense dark color="primary">
+          <v-toolbar-title>Cliente</v-toolbar-title>
+          <v-spacer></v-spacer>
+           <v-btn icon dark @click="close()">
             <v-icon>mdi-close</v-icon>
           </v-btn>
-          <v-toolbar-title>Editar Client</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-toolbar-items>
-            <v-btn dark text @click="dialog = false">Save</v-btn>
-          </v-toolbar-items>
-          <v-menu bottom right offset-y>
-            <template>
-              <v-btn dark icon v-on="on">
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item>
-                <v-list-item-title></v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
         </v-toolbar>
-        <v-card-text>
-          <div class="col-sm-6" >
-            <v-row>
-              <v-col cols="8" sm="6">
-                <v-text-field
-                  dense
-                  v-model="editedItem.name"
-                  outlined
-                  label="Cliente nome"
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" outlined sm="6">
-                <v-text-field
-                  label="Telefone"
-                  persistent-hint
-                  outlined
-                  required
-                  dense
-                  v-model="editedItem.tel"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-select
-                  dense
-                  v-model="editedItem.type"
-                  outlined
-                  :items="['Jurídica', 'Física']"
-                  label="Tipo"
-                  required
-                ></v-select>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-text-field v-model="editedItem.doc" dense outlined label="CPF - CNPJ"></v-text-field>
-              </v-col>
+        <div class="container pa-3">
+          <v-row>
+            <v-col cols="8" sm="6">
+              <v-text-field dense v-model="editedItem.name" outlined label="Cliente nome" required></v-text-field>
+            </v-col>
+            <v-col cols="12" outlined sm="6">
+              <v-text-field
+                label="Telefone"
+                persistent-hint
+                outlined
+                required
+                dense
+                v-model="editedItem.tel"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="6">
+              <v-select
+                dense
+                v-model="editedItem.type"
+                outlined
+                :items="['Jurídica', 'Física']"
+                label="Tipo"
+                required
+              ></v-select>
+            </v-col>
+            <v-col cols="12" sm="6">
+              <v-text-field v-model="editedItem.doc" dense outlined label="CPF - CNPJ"></v-text-field>
+            </v-col>
 
-              <v-col cols="12" sm="6">
-                <v-text-field
-                  v-model="editedItem.adress.street"
-                  dense
-                  outlined
-                  label="Endereço"
-                  type="text"
-                  hint="Digite o nome da rua, avenida ou logradouro"
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="2" md="2">
-                <v-text-field
-                  v-model="editedItem.adress.number"
-                  dense
-                  outlined
-                  label="Nº"
-                  type="text"
-                  required
-                ></v-text-field>
-              </v-col>
+            <v-col cols="12" sm="6">
+              <v-text-field
+                v-model="editedItem.adress.street"
+                dense
+                outlined
+                label="Endereço"
+                type="text"
+                hint="Digite o nome da rua, avenida ou logradouro"
+                required
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="2" md="2">
+              <v-text-field
+                v-model="editedItem.adress.number"
+                dense
+                outlined
+                label="Nº"
+                type="text"
+                required
+              ></v-text-field>
+            </v-col>
 
-              <v-col cols="12" sm="4">
-                <v-select
-                  dense
-                  v-model="editedItem.adress.district"
-                  outlined
-                  :items="['Centro', 'Cidade nova', 'Residencial Sul', 'Residencial Sul']"
-                  label="Bairro"
-                  required
-                ></v-select>
-              </v-col>
-              <v-col cols="12" sm="8">
-                <v-text-field
-                  v-model="editedItem.adress.complement"
-                  dense
-                  outlined
-                  label="Complemento"
-                  type="text"
-                  hint="Adicione um complemento"
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="4">
-                <v-text-field
-                  v-model="editedItem.adress.cep"
-                  dense
-                  outlined
-                  label="CEP"
-                  type="text"
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </div>
-        </v-card-text>
-        <v-card-actions>
+            <v-col cols="12" sm="4">
+              <v-select
+                dense
+                v-model="editedItem.adress.district"
+                outlined
+                :items="['Centro', 'Cidade nova', 'Residencial Sul', 'Residencial Sul']"
+                label="Bairro"
+                required
+              ></v-select>
+            </v-col>
+            <v-col cols="12" sm="8">
+              <v-text-field
+                v-model="editedItem.adress.complement"
+                dense
+                outlined
+                label="Complemento"
+                type="text"
+                hint="Adicione um complemento"
+                required
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="4">
+              <v-text-field
+                v-model="editedItem.adress.cep"
+                dense
+                outlined
+                label="CEP"
+                type="text"
+                required
+              ></v-text-field>
+            </v-col>
+          </v-row>
+           <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary"  outlined text @click="close()">Fechar</v-btn>
-          <v-btn color="primary"  @click="registerClient()">Salvar</v-btn>
-        </v-card-actions>
+          <v-btn outlined color="red" text @click="close()">Fechar</v-btn>
+          <v-btn color="primary" @click="registerClient()">Salvar</v-btn>
+           </v-card-actions>
+        </div>
       </v-card>
     </v-dialog>
   </div>
@@ -184,6 +153,7 @@ export default {
   data: () => ({
     dialog: false,
     search: '',
+    switch1: false,
     components: [],
     clients: [],
     idNumber: Number,
@@ -283,6 +253,7 @@ export default {
           return resp.json()
         }).then(json => {
           console.log(json)
+          this.dialog = false
         })
       }
       else {
@@ -342,6 +313,8 @@ export default {
         this.editedItem = Object.assign({}, this.defaultItem)
         this.editedIndex = -1
       }, 300)
+      console.log(this.editItem);
+      
     },
 
   }

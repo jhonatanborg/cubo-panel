@@ -36,15 +36,42 @@
         </template>
       </v-data-table>
     </v-card>
-    <v-dialog v-model="dialog" persistent max-width="600px">
-      <v-card>
-        <v-card-title>
-          <span class="headline">Novo Cliente</span>
-        </v-card-title>
+    <v-dialog
+      v-model="dialog"
+      fullscreen
+      hide-overlay
+      transition="dialog-bottom-transition"
+      scrollable
+      persistent
+      max-width="600px"
+    >
+      <v-card tile>
+        <v-toolbar flat dense dark color="primary">
+          <v-btn icon dark @click="dialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <v-toolbar-title>Editar Client</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-toolbar-items>
+            <v-btn dark text @click="dialog = false">Save</v-btn>
+          </v-toolbar-items>
+          <v-menu bottom right offset-y>
+            <template>
+              <v-btn dark icon v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item>
+                <v-list-item-title></v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-toolbar>
         <v-card-text>
-          <v-container>
+          <div class="col-sm-6" >
             <v-row>
-              <v-col cols="12" sm="6">
+              <v-col cols="8" sm="6">
                 <v-text-field
                   dense
                   v-model="editedItem.name"
@@ -131,13 +158,12 @@
                 ></v-text-field>
               </v-col>
             </v-row>
-          </v-container>
-          <small>*indicates required field</small>
+          </div>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="close()">Close</v-btn>
-          <v-btn color="blue darken-1" text @click="registerClient()">Save</v-btn>
+          <v-btn color="primary"  outlined text @click="close()">Fechar</v-btn>
+          <v-btn color="primary"  @click="registerClient()">Salvar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

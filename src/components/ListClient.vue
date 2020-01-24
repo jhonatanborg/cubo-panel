@@ -36,103 +36,244 @@
         </template>
       </v-data-table>
     </v-card>
-    <v-dialog v-model="dialog"  persistent max-width="600px" transition="dialog-bottom-transition">
+    <v-dialog v-model="dialog" fullscreen max-width="600px" transition="dialog-bottom-transition">
       <v-card>
-        <v-toolbar dense dark color="primary">
+        <v-toolbar dense app dark color="primary">
           <v-toolbar-title>Cliente</v-toolbar-title>
           <v-spacer></v-spacer>
-           <v-btn icon dark @click="close()">
+          <v-btn icon dark @click="close()">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
         <div class="container pa-3">
-          <v-row>
-            <v-col cols="8" sm="6">
-              <v-text-field dense v-model="editedItem.name" outlined label="Cliente nome" required></v-text-field>
-            </v-col>
-            <v-col cols="12" outlined sm="6">
-              <v-text-field
-                label="Telefone"
-                persistent-hint
-                outlined
-                required
-                dense
-                v-model="editedItem.tel"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="6">
-              <v-select
-                dense
-                v-model="editedItem.type"
-                outlined
-                :items="['Jurídica', 'Física']"
-                label="Tipo"
-                required
-              ></v-select>
-            </v-col>
-            <v-col cols="12" sm="6">
-              <v-text-field v-model="editedItem.doc" dense outlined label="CPF - CNPJ"></v-text-field>
-            </v-col>
-
-            <v-col cols="12" sm="6">
-              <v-text-field
-                v-model="editedItem.adress.street"
-                dense
-                outlined
-                label="Endereço"
-                type="text"
-                hint="Digite o nome da rua, avenida ou logradouro"
-                required
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="2" md="2">
-              <v-text-field
-                v-model="editedItem.adress.number"
-                dense
-                outlined
-                label="Nº"
-                type="text"
-                required
-              ></v-text-field>
-            </v-col>
-
-            <v-col cols="12" sm="4">
-              <v-select
-                dense
-                v-model="editedItem.adress.district"
-                outlined
-                :items="['Centro', 'Cidade nova', 'Residencial Sul', 'Residencial Sul']"
-                label="Bairro"
-                required
-              ></v-select>
-            </v-col>
-            <v-col cols="12" sm="8">
-              <v-text-field
-                v-model="editedItem.adress.complement"
-                dense
-                outlined
-                label="Complemento"
-                type="text"
-                hint="Adicione um complemento"
-                required
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="4">
-              <v-text-field
-                v-model="editedItem.adress.cep"
-                dense
-                outlined
-                label="CEP"
-                type="text"
-                required
-              ></v-text-field>
-            </v-col>
-          </v-row>
-           <v-card-actions>
+          <div>
+            <div class="mt-5 pb-5">
+              <div class="d-flex justify-space-between">
+                <div>Resumo</div>
+                <v-spacer></v-spacer>
+                <div>Ultima atualização - 24/30/2019 00:30</div>
+              </div>
+              <v-divider dense></v-divider>
+            </div>
+            <v-layout class="d-flex justify-space-between">
+              <v-flex xs12 sm6 md3>
+                 <v-alert
+                  icon="mdi-firework"
+                  border="left"
+                  color="indigo"
+                  dark
+                >I'm an alert with a border left type info</v-alert>
+              </v-flex>
+              <v-flex xs12 sm6 md3>
+                 <v-alert
+                  icon="mdi-firework"
+                  border="left"
+                  color="indigo"
+                  dark
+                >I'm an alert with a border left type info</v-alert>
+              </v-flex>
+              <v-flex xs12 sm6 md3>
+                  <v-alert
+                  icon="mdi-firework"
+                  border="left"
+                  color="indigo"
+                  dark
+                >I'm an alert with a border left type info</v-alert>
+              </v-flex>
+              <v-flex xs12 sm6 md3>
+                <v-alert
+                  icon="mdi-firework"
+                  border="left"
+                  color="indigo"
+                  dark
+                >I'm an alert with a border left type info</v-alert>
+              </v-flex>
+            </v-layout>
+          </div>
           <v-spacer></v-spacer>
-          <v-btn outlined color="red" text @click="close()">Fechar</v-btn>
-          <v-btn color="primary" @click="registerClient()">Salvar</v-btn>
-           </v-card-actions>
+          <v-row>
+            <div class="form-1 col-sm-6">
+              <div class="mt-5">
+                <div>Dados Pessais</div>
+                <v-divider dense></v-divider>
+              </div>
+              <v-row>
+                <v-col cols="8" sm="6">
+                  <v-text-field dense v-model="editedItem.name" outlined label="Cliente" required></v-text-field>
+                </v-col>
+                <v-col cols="12" outlined sm="6">
+                  <v-text-field
+                    label="Telefone"
+                    persistent-hint
+                    outlined
+                    required
+                    dense
+                    v-model="editedItem.tel"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-select
+                    dense
+                    v-model="editedItem.type"
+                    outlined
+                    :items="['Jurídica', 'Física']"
+                    label="Tipo"
+                    required
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-text-field v-model="editedItem.doc" dense outlined label="CPF - CNPJ"></v-text-field>
+                </v-col>
+
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="editedItem.adress.street"
+                    dense
+                    outlined
+                    label="Endereço"
+                    type="text"
+                    hint="Digite o nome da rua, avenida ou logradouro"
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="2" md="2">
+                  <v-text-field
+                    v-model="editedItem.adress.number"
+                    dense
+                    outlined
+                    label="Nº"
+                    type="text"
+                    required
+                  ></v-text-field>
+                </v-col>
+
+                <v-col cols="12" sm="4">
+                  <v-select
+                    dense
+                    v-model="editedItem.adress.district"
+                    outlined
+                    :items="['Centro', 'Cidade nova', 'Residencial Sul', 'Residencial Sul']"
+                    label="Bairro"
+                    required
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="8">
+                  <v-text-field
+                    v-model="editedItem.adress.complement"
+                    dense
+                    outlined
+                    label="Complemento"
+                    type="text"
+                    hint="Adicione um complemento"
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="4">
+                  <v-text-field
+                    v-model="editedItem.adress.cep"
+                    dense
+                    outlined
+                    label="CEP"
+                    type="text"
+                    required
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </div>
+            <div class="form-2 col-sm-6">
+              <div class="mt-5">
+                <div>Dados Pessais</div>
+                <v-divider dense></v-divider>
+              </div>
+              <v-row>
+                <v-col cols="8" sm="6">
+                  <v-text-field dense v-model="editedItem.name" outlined label="Cliente" required></v-text-field>
+                </v-col>
+                <v-col cols="12" outlined sm="6">
+                  <v-text-field
+                    label="Telefone"
+                    persistent-hint
+                    outlined
+                    required
+                    dense
+                    v-model="editedItem.tel"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-select
+                    dense
+                    v-model="editedItem.type"
+                    outlined
+                    :items="['Jurídica', 'Física']"
+                    label="Tipo"
+                    required
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-text-field v-model="editedItem.doc" dense outlined label="CPF - CNPJ"></v-text-field>
+                </v-col>
+
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="editedItem.adress.street"
+                    dense
+                    outlined
+                    label="Endereço"
+                    type="text"
+                    hint="Digite o nome da rua, avenida ou logradouro"
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="2" md="2">
+                  <v-text-field
+                    v-model="editedItem.adress.number"
+                    dense
+                    outlined
+                    label="Nº"
+                    type="text"
+                    required
+                  ></v-text-field>
+                </v-col>
+
+                <v-col cols="12" sm="4">
+                  <v-select
+                    dense
+                    v-model="editedItem.adress.district"
+                    outlined
+                    :items="['Centro', 'Cidade nova', 'Residencial Sul', 'Residencial Sul']"
+                    label="Bairro"
+                    required
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="8">
+                  <v-text-field
+                    v-model="editedItem.adress.complement"
+                    dense
+                    outlined
+                    label="Complemento"
+                    type="text"
+                    hint="Adicione um complemento"
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="4">
+                  <v-text-field
+                    v-model="editedItem.adress.cep"
+                    dense
+                    outlined
+                    label="CEP"
+                    type="text"
+                    required
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </div>
+          </v-row>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn outlined color="red" text @click="close()">Fechar</v-btn>
+            <v-btn color="primary" @click="registerClient()">Salvar</v-btn>
+          </v-card-actions>
         </div>
       </v-card>
     </v-dialog>
@@ -149,11 +290,12 @@ export default {
   created: function () {
     // `this` points to the vm instance
     this.listAllCompanies()
+    this.dataClient()
   },
   data: () => ({
     dialog: false,
     search: '',
-    switch1: false,
+    clientStatus: false,
     components: [],
     clients: [],
     idNumber: Number,
@@ -229,6 +371,21 @@ export default {
         var clients = this.clients
         var ultimo = clients[clients.length - 1];
         this.idNumber = parseInt(ultimo.id)
+      })
+    },
+      dataClient() {
+      const url = `${vars.host}contractController.php`
+      let formData = new FormData()
+      formData.append('all-contracts', 'true')
+      formData.append('client-id', 9)
+      fetch(url, {
+        method: 'POST',
+        body: formData
+      }).then(resp => {
+        return resp.json()
+      }).then(json => {
+        console.log(json);
+        
       })
     },
     registerClient() {
@@ -314,7 +471,7 @@ export default {
         this.editedIndex = -1
       }, 300)
       console.log(this.editItem);
-      
+
     },
 
   }

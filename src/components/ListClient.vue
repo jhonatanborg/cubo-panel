@@ -38,7 +38,7 @@
     </v-card>
     <v-dialog v-model="dialog" fullscreen max-width="600px" transition="dialog-bottom-transition">
       <v-card>
-        <v-toolbar dense  dark color="primary">
+        <v-toolbar dense dark color="primary">
           <v-toolbar-title>Cliente</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon dark @click="close()">
@@ -57,36 +57,41 @@
             </div>
             <v-layout class="d-flex justify-space-between">
               <v-flex xs12 sm6 md3 class="mr-3">
-                 <v-alert
-                  icon="mdi-firework"
-                  border="left"
-                  color="indigo"
-                  dark
-                >120 parcelas pendentes</v-alert>
-              </v-flex>
-              <v-flex xs12 sm6 md3 class="mr-3">
-                 <v-alert
-                  icon="mdi-firework"
-                  border="left"
-                  color="indigo"
-                  dark
-                >Status: {{resumeClient.status}}</v-alert>
-              </v-flex>
-              <v-flex xs12 sm6 md3 class="mr-3">
-                  <v-alert
-                  icon="mdi-firework"
-                  border="left"
-                  color="indigo"
-                  dark
-                >120 contratos abertos</v-alert>
-              </v-flex>
-              <v-flex xs12 sm6 md3>
                 <v-alert
                   icon="mdi-firework"
                   border="left"
                   color="indigo"
                   dark
-                >120 contratos finalizados</v-alert>
+                >{{resumeClient.installments}} parcelas pendentes</v-alert>
+              </v-flex>
+
+              <v-flex xs12 sm6 md3 class="mr-3">
+                <v-alert
+                  icon="mdi-clipboard-alert-outline"
+                  border="left"
+                  color="indigo"
+                  dark
+                >{{resumeClient.contractsActive}} contratos abertos</v-alert>
+              </v-flex>
+              <v-flex xs12 sm6 md3 class="mr-3 pb-1">
+                <v-alert
+                  icon="mdi-clipboard-check-outline"
+                  border="left"
+                  color="indigo"
+                  dark
+                >{{resumeClient.contractsSuccess}} contrato finalizados</v-alert>
+              </v-flex>
+              <v-flex xs12 sm6 md3>
+                <v-alert border="left" color="success" dark>
+                   <h5>Status:</h5>
+                  <v-row no-gutters>
+                    <div>{{editedItem.status}}</div>
+                    <v-spacer></v-spacer>
+                    <v-col>
+                      <v-btn small  color="white" outlined>Alterar</v-btn>
+                    </v-col>
+                  </v-row>
+                </v-alert>
               </v-flex>
             </v-layout>
           </div>
@@ -208,17 +213,18 @@ export default {
   created: function () {
     // `this` points to the vm instance
     this.listAllCompanies()
+    this.unsuccessful()
   },
   data: () => ({
     dialog: false,
     search: '',
     resumeClient: [
-     {
-       contractsActive:'',
-       installments:'',
-       contractsSuccess:'',
-       status:''
-     }
+      {
+        contractsActive: '',
+        installments: '',
+        contractsSuccess: '',
+        status: ''
+      }
     ],
 
     components: [],
@@ -359,7 +365,7 @@ export default {
               complement: this.adress.complement,
             },
           })
-          console.log(this.idNumber)
+          // console.log(this.idNumber)
         })
       }
     },
@@ -368,7 +374,6 @@ export default {
       this.editClient = true
       this.editedIndex = this.clients.indexOf(item)
       this.editedItem = Object.assign({}, item)
-      this.dialog = true
       const url = `${vars.host}contractController.php`
       let formData = new FormData()
       formData.append('all-contracts', 'true')
@@ -380,7 +385,35 @@ export default {
         return resp.json()
       }).then(json => {
         console.log(json)
-        
+        let qtdOpens = 0
+        let qtdCloses = 0
+        let quantityInstallments = 0
+        let clientStatus
+        json.forEach(item => {
+          if (item.status == 'ABERTO')
+            qtdOpens++
+        })
+        json.forEach(item => {
+          if (item.status == 'FECHADO')
+            qtdCloses++
+        })
+        json.forEach(item => {
+          if (item.installments)
+            item.installments.forEach(item2 => {
+              if (item2.status == 'PENDENTE')
+                quantityInstallments++
+            })
+        })
+        json.forEach(item => {
+          if (item.client)
+            clientStatus = item.client.status
+        })
+        this.resumeClient.contractsActive = qtdOpens
+        this.resumeClient.contractsSuccess = qtdCloses
+        this.resumeClient.installments = quantityInstallments
+        this.resumeClient.status = clientStatus
+        console.log(qtdCloses);
+        this.dialog = true
       })
     },
     close() {
@@ -391,7 +424,19 @@ export default {
         this.editedIndex = -1
       }, 300)
     },
-
+    unsuccessful() {
+      const url = `${vars.host}parcelController.php`
+      let formData = new FormData()
+      formData.append('unsuccessful', 'true')
+      fetch(url, {
+        method: 'POST',
+        body: formData
+      }).then(resp => {
+        return resp.json()
+      }).then(json => {
+        console.log(json)
+      })
+    },
   }
 }
 </script>

@@ -3,7 +3,7 @@
     <v-navigation-drawer v-model="drawer" :clipped="$vuetify.breakpoint.lgAndUp" app>
       <v-list dense>
         <template>
-           <v-list-item>
+          <v-list-item to="/" color="primary">
             <v-list-item-action>
               <v-icon>mdi-view-dashboard-outline</v-icon>
             </v-list-item-action>
@@ -19,7 +19,7 @@
               <v-list-item-title>Clientes</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-           <v-list-item>
+          <v-list-item >
             <v-list-item-action>
               <v-icon>mdi-animation-outline</v-icon>
             </v-list-item-action>
@@ -27,7 +27,7 @@
               <v-list-item-title>Caixas</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-           <v-list-item>
+          <v-list-item>
             <v-list-item-action>
               <v-icon>mdi-note-multiple-outline</v-icon>
             </v-list-item-action>
@@ -35,7 +35,7 @@
               <v-list-item-title>Contratos</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-           <v-list-item >
+          <v-list-item>
             <v-list-item-action>
               <v-icon>mdi-clipboard-outline</v-icon>
             </v-list-item-action>
@@ -46,7 +46,16 @@
         </template>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar dense :clipped-left="$vuetify.breakpoint.lgAndUp" app color="blue darken-3" dark>
+    <v-app-bar
+      dense
+      :clipped-left="$vuetify.breakpoint.lgAndUp"
+      app
+      color="purple darken-3"
+      flat
+      text-color="white"
+      
+
+    >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title style="width: 300px" class="ml-0 pl-4">
         <span class="hidden-sm-and-down">Cubo Painel</span>
@@ -64,14 +73,13 @@
         </v-avatar>
       </v-btn>
     </v-app-bar>
-   
   </div>
 </template>
 
 <script>
 
 export default {
-
+  name: "Menu",
   props: {
     source: String,
   },

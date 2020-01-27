@@ -38,8 +38,6 @@
 <script>
 import ListClient from '../components/ListClient';
 import Menu from '../components/Menu';
-
-
 export default {
   components: {
     ListClient,

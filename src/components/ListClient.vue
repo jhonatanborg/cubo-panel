@@ -296,6 +296,7 @@ export default {
     getColor(status) {
       if (status == "Ativo") return 'primary'
       else if (status == "Inativo") return 'orange'
+      
       else return 'green'
     },
     listAllClients() {
@@ -332,9 +333,6 @@ export default {
         form.append('complement', this.editedItem.adress.complement)
         form.append('number', this.editedItem.adress.number)
         form.append('cep', this.editedItem.adress.cep)
-
-
-
         fetch(url, {
           method: 'POST',
           body: form

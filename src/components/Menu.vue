@@ -43,7 +43,6 @@
               <v-list-item-title>Relatorios</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          
         </template>
       </v-list>
     </v-navigation-drawer>

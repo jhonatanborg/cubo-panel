@@ -46,7 +46,7 @@
           </v-btn>
         </v-toolbar>
         <div class="container pa-3">
-          <div>
+          <div v-if="editClient == true">
             <div class="mt-5 pb-5">
               <div class="d-flex justify-space-between">
                 <div>Resumo</div>
@@ -83,13 +83,22 @@
               </v-flex>
               <v-flex xs12 sm6 md3>
                 <v-alert border="left" color="success" dark>
-                   <h5>Status:</h5>
-                  <v-row no-gutters>
-                    <div>{{editedItem.status}}</div>
+                  <v-row align="center" no-gutters>
+                    <div>
+                      <h5>Status:</h5>
+                      {{editedItem.status}}
+                    </div>
                     <v-spacer></v-spacer>
-                    <v-col>
-                      <v-btn small  color="white" outlined>Alterar</v-btn>
-                    </v-col>
+                    <v-btn
+                      x-small
+                      class="ma-2"
+                      @click="editStatusSend()"
+                      outlined
+                      fab
+                      color="white"
+                    >
+                      <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
                   </v-row>
                 </v-alert>
               </v-flex>
@@ -212,7 +221,7 @@ export default {
   },
   created: function () {
     // `this` points to the vm instance
-    this.listAllCompanies()
+    this.listAllClients()
     this.unsuccessful()
   },
   data: () => ({
@@ -226,7 +235,6 @@ export default {
         status: ''
       }
     ],
-
     components: [],
     clients: [],
     idNumber: Number,
@@ -277,7 +285,11 @@ export default {
       },
     },
     editClient: false,
-
+    dropdown_icon: [
+      { text: 'list', callback: () => console.log('list') },
+      { text: 'favorite', callback: () => console.log('favorite') },
+      { text: 'delete', callback: () => console.log('delete') },
+    ],
   }),
   methods: {
 
@@ -286,7 +298,7 @@ export default {
       else if (status == "Inativo") return 'orange'
       else return 'green'
     },
-    listAllCompanies() {
+    listAllClients() {
       const url = `${vars.host}clientController.php`
       let formData = new FormData()
       formData.append('all-clients', 'true')
@@ -320,6 +332,9 @@ export default {
         form.append('complement', this.editedItem.adress.complement)
         form.append('number', this.editedItem.adress.number)
         form.append('cep', this.editedItem.adress.cep)
+
+
+
         fetch(url, {
           method: 'POST',
           body: form
@@ -328,45 +343,36 @@ export default {
         }).then(json => {
           console.log(json)
           this.dialog = false
+          this.clients = []
+          this.listAllClients()
+          this.dialog = false
         })
       }
       else {
         let form = new FormData()
         form.append('register-client', 'true')
-        form.append('street', this.editedItem.address)
-        form.append('district', this.editedItem.district)
-        form.append('number', this.editedItem.number)
-        form.append('cep', this.editedItem.cep)
-        form.append('complement', this.editedItem.complement)
         form.append('name', this.editedItem.name)
         form.append('doc', this.editedItem.doc)
         form.append('tel', this.editedItem.tel)
         form.append('type', this.editedItem.type)
         form.append('status', "Ativo")
-        fetch(url, {
-          method: 'POST',
-          body: form
-        }).then(resp => {
-          return resp.json()
-        }).then(json => {
-          console.log(json.client_id)
-          this.clients.push({
-            id: json.client_id,
-            name: this.editedItem.name,
-            doc: this.editedItem.doc,
-            type: this.editedItem.type,
-            tel: this.editedItem.tel,
-            status: "Ativo",
-            adress: {
-              street: this.adress.street,
-              district: this.adress.district,
-              number: this.adress.number,
-              cep: this.adress.cep,
-              complement: this.adress.complement,
-            },
+         form.append('street', this.editedItem.adress.street)
+        form.append('district', this.editedItem.adress.district)
+        form.append('number', this.editedItem.adress.number)
+        form.append('cep', this.editedItem.adress.cep)
+        form.append('complement', this.editedItem.adress.complement)
+          fetch(url, {
+            method: 'POST',
+            body: form
+          }).then(resp => {
+            return resp.json()
+          }).then(json => {
+            this.clients = []
+            this.listAllClients()
+                      this.dialog = false
+
+
           })
-          // console.log(this.idNumber)
-        })
       }
     },
 
@@ -437,7 +443,17 @@ export default {
         console.log(json)
       })
     },
-  }
+    editStatusSend() {
+      if (this.editedItem.status == 'Ativo') {
+        this.editStatus = false
+        return this.editedItem.status = 'Inativo'
+      } else if (this.editedItem.status == 'Inativo') {
+        this.editStatus = false
+        return this.editedItem.status = 'Ativo'
+      }
+    }
+  },
+
 }
 </script>
 

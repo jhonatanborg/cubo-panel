@@ -85,7 +85,7 @@ export default {
   },
   data: () => ({
     dialog: false,
-    drawer: false,
+    drawer: true,
     items: [
       { icon: 'mdi-contacts', text: 'Clientes', router: 'clients' },
       { icon: 'mdi-history', text: 'Caixas', router: 'caixas' },

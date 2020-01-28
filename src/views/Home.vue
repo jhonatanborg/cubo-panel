@@ -268,63 +268,16 @@ export default {
       }).then(resp => {
         return resp.json()
       }).then(json => {
-        this.planId = json
-        // let element = []
-        // json.forEach(element => {
-        //   this.plans.push(element.value);
-        // });
-        // json.forEach(element => {
-        //   this.planId.push(element.id);
-        // });
         this.plans = json
-        console.log(this.planId)
-
+        console.log(this.plans)
       })
     },
     getInstallments() {
- this.valortotal = localStorage.getItem('total')
-      let today = new Date();
-      let d = today.getDate() + 1
-      let m = today.getMonth()
-      let y = today.getFullYear()
-      let obj = []
-      let verificar = []
-      let curdate = []
-      let number = 1
-      const par = localStorage.getItem('plano')
-      let localplan = localStorage.getItem('radios')
-      let arrayPlan = localplan.split('-', 2);
-      this.valor = arrayPlan[0]
-      this.quantidadeparcela = arrayPlan[1]
-      let cobrar = localStorage.getItem('checkedNames') || ''
-      for (let i = 0; i < arrayPlan[1]; i++) {
-        let date = new Date(y, m, d + i)
-        let array
-        let dataStr = date.toString()
-        if (dataStr.indexOf('Sat') < 0) {
-          array = [this.valor, date.toLocaleDateString('pt-br'), number, 'cobrar']
+      this.plans.forEach(p => {
+        if (p.id == this.planValue) {
+          console.log(p.p11, p.p24);
         }
-        if (dataStr.indexOf('Sun') < 0) {
-          array = [this.valor, date.toLocaleDateString('pt-br'), number, 'cobrar']
-        }
-        if (cobrar.indexOf('1') < 0 && dataStr.indexOf('Sat') >= 0) {
-          array = [this.valor, date.toLocaleDateString('pt-br'), number, 'não-cobrar']
-          arrayPlan[1]++
-          number--
-        }
-        if (cobrar.indexOf('2') < 0 && dataStr.indexOf('Sun') >= 0) {
-          array = [this.valor, date.toLocaleDateString('pt-br'), number, 'não-cobrar']
-          arrayPlan[1]++
-          number--
-        }
-        verificar.push(array)
-        if (array[3] === 'cobrar')
-          obj.push(array)
-        number++
-      }
-      console.log(verificar)
-      // console.log(obj)
-      this.installments = obj;
+      })
     },
   },
   watch: {

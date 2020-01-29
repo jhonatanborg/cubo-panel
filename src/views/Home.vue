@@ -55,7 +55,7 @@
                   <div class="mb-2">Novo Emprestimo</div>
                   <v-autocomplete
                     class="mb-5"
-                    v-model="idClient"
+                    v-model="planSelect.idClient"
                     :items="items"
                     outlined
                     :loading="isLoading"
@@ -94,9 +94,10 @@
                   </v-autocomplete>
                   <div>
                     <v-select
-                      v-model="planValue"
+                      v-model="planSelect.idPlano"
                       dense
                       :items="plans"
+                      @change="onChange"
                       label="Selecione plano"
                       outlined
                       item-text="value"
@@ -105,16 +106,38 @@
                   </div>
                   <div class>
                     <div class="mb-2">Quantidade de parcelas</div>
-                    <v-radio-group v-model="quantityParcel" class="d-flex justify-space-between">
-                      <v-radio color="primary" value="11" label="11 vezes"></v-radio>
-                      <v-radio color="primary" value="24" label="24 vezes"></v-radio>
+                    <v-radio-group
+                      v-model="planSelect.quantityParcel"
+                      class="d-flex justify-space-between"
+                    >
+                      <v-radio
+                        color="primary"
+                        value="11"
+                        v-bind:label="'11 parcelas de '+ this.p11"
+                      ></v-radio>
+
+                      <v-radio
+                        color="primary"
+                        value="24"
+                        v-bind:label="'24 parcelas de '+ this.p24"
+                      ></v-radio>
                     </v-radio-group>
                   </div>
                   <div class>
                     <div class="mb-2">Cobrar finais de semana</div>
                     <div class="d-flex justify-space-between">
-                      <v-checkbox color="primary" label="Sábado" v-model="daysValue" value="1"></v-checkbox>
-                      <v-checkbox color="primary" label="Domingo" v-model="daysValue" value="2"></v-checkbox>
+                      <v-checkbox
+                        color="primary"
+                        label="Sábado"
+                        v-model="planSelect.daysValue"
+                        value="1"
+                      ></v-checkbox>
+                      <v-checkbox
+                        color="primary"
+                        label="Domingo"
+                        v-model="planSelect.daysValue"
+                        value="2"
+                      ></v-checkbox>
                     </div>
                   </div>
                   <v-btn block color="primary" @click="getInstallments()" dark>Confirmar</v-btn>
@@ -147,19 +170,24 @@ export default {
   },
   data() {
     return {
-      planId: [],
-      plan: '',
-      quantityParcel: "",
-      planValue: 154114,
-      daysValue: [],
+      p11: "",
+      p24: "",
+      planSelect: {
+        idClient: "",
+        idPlano: "",
+        planValue: "",
+        quantityParcel: '',
+        parcelValue: "",
+        daysValue: [],
+        installments: [],
+      },
       row: null,
-    
+      isLoading: false,
       items: [],
       idClient: "",
       search: null,
       tab: null,
       parcel: [],
-      installments: [],
       interval: {},
       value: 0,
       plans: [],
@@ -273,18 +301,95 @@ export default {
       })
     },
     getInstallments() {
-      this.plans.forEach(p => {
-        if (p.id == this.planValue) {
-          console.log(p.p11, p.p24);
+      let today = new Date();
+      let d = today.getDate() + 1
+      let m = today.getMonth()
+      let y = today.getFullYear()
+      let obj = []
+      let verificar = []
+      let curdate = []
+      let number = 1
+      this.plans.forEach(element => {
+        if (element.id == this.planSelect.idPlano) {
+          this.p11 = element.p11
+          if (this.planSelect.quantityParcel == 11) {
+            return this.planSelect.parcelValue = element.p11
+          } else {
+            return this.planSelect.parcelValue = element.p24
+          }
+        }
+      })
+      let cobrar = this.planSelect.daysValue || ''
+      for (let i = 0; i < this.planSelect.quantityParcel; i++) {
+        let date = new Date(y, m, d + i)
+        let array
+        let dataStr = date.toString()
+        if (dataStr.indexOf('Sat') < 0) {
+          array = [this.planSelect.parcelValue, date.toLocaleDateString('pt-br'), number, 'cobrar']
+        }
+        if (dataStr.indexOf('Sun') < 0) {
+          array = [this.planSelect.parcelValue, date.toLocaleDateString('pt-br'), number, 'cobrar']
+        }
+        if (cobrar.indexOf('1') < 0 && dataStr.indexOf('Sat') >= 0) {
+          array = [this.planSelect.parcelValue, date.toLocaleDateString('pt-br'), number, 'não-cobrar']
+          this.planSelect.quantityParcel++
+          number--
+        }
+        if (cobrar.indexOf('2') < 0 && dataStr.indexOf('Sun') >= 0) {
+          array = [this.planSelect.parcelValue, date.toLocaleDateString('pt-br'), number, 'não-cobrar']
+          this.planSelect.quantityParcel++
+          number--
+        }
+        verificar.push(array)
+        if (array[3] === 'cobrar')
+          obj.push(array)
+
+        number++
+      }
+      this.planSelect.installments = obj;
+      // console.log(this.planSelect);
+      this.confirm()
+    },
+    confirm() {
+      const url = `${vars.host}contractController.php`
+      let form = new FormData()
+      form.append('confirm', 'true')
+      let json = JSON.stringify(this.planSelect.installments)
+      form.append('parcelas', json)
+      form.append('plan-id', this.planSelect.idPlano)
+      form.append('client-id', this.planSelect.idClient)
+      form.append('user-id', '3')
+      fetch(url, {
+        method: 'POST',
+        body: form
+      }).then(resp => {
+        return resp.json()
+      }).then(json => {
+        console.log(json)
+        // document.getElementById("respp").innerHTML = json
+        if (json.msg.indexOf('Sucesso') > 0) {
+          this.success = true
+          // alert(json.msg)
+          // this.$router.push('home')
         }
       })
     },
+    onChange(event) {
+      this.plans.forEach(p => {
+        if (p.id == event) {
+          this.p11 = p.p11
+          this.p24 = p.p24
+          console.log(p.p11, p.p24);
+        }
+      })
+    }
   },
   watch: {
     model(val) {
       if (val != null) this.tab = 0
       else this.tab = null
     },
+
     search(val) {
       // Items have already been loaded
       if (this.items.length > 0) return
@@ -305,7 +410,9 @@ export default {
       })
         .finally(() => (this.isLoading = false))
     },
+
   },
+
 }
 </script>
 

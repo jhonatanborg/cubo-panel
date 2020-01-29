@@ -27,7 +27,7 @@
               <v-list-item-title>Caixas</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item>
+          <v-list-item to="contract" color="primary">
             <v-list-item-action>
               <v-icon>mdi-note-multiple-outline</v-icon>
             </v-list-item-action>

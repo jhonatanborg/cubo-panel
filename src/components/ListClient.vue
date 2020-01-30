@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card class>
+    <v-card flat outlined class>
       <v-card-title color="red">
         Clientes
         <v-spacer></v-spacer>
@@ -312,6 +312,7 @@ export default {
         json.forEach(item => {
           this.clients.push(item)
         })
+
         var clients = this.clients
         var ultimo = clients[clients.length - 1];
         this.idNumber = parseInt(ultimo.id)

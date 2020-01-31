@@ -98,7 +98,8 @@
                     <v-flex xs12 sm6 md3 class="mr-3">
                       <v-alert icon="mdi-firework" border="left" color="indigo" dark>
                         <div>
-                          <b>Plano {{parcelDetails.planValue}}</b>
+                          Plano
+                          <b v-text="convertMoney(parcelDetails.planValue)"></b>
                         </div>
                         <v-divider></v-divider>
                         <div>
@@ -112,7 +113,7 @@
                         <div>{{parcelDetails.qtdPending}} pendentes</div>
                         <v-divider></v-divider>
                         <div>
-                          <b>{{parcelDetails.pending}}</b>
+                          <b v-text="convertMoney(parcelDetails.pending)"></b>
                         </div>
                       </v-alert>
                     </v-flex>
@@ -122,7 +123,7 @@
                         <div>{{parcelDetails.qtdUnsuccessful}} Vencidas</div>
                         <v-divider></v-divider>
                         <div>
-                          <b>{{parcelDetails.unsuccessful}}</b>
+                          <b v-text="convertMoney(parcelDetails.unsuccessful)"></b>
                         </div>
                       </v-alert>
                     </v-flex>
@@ -131,7 +132,7 @@
                         <div>{{parcelDetails.qtdReceive}} Recebidas</div>
                         <v-divider></v-divider>
                         <div>
-                          <b>{{parcelDetails.receive}}</b>
+                          <b v-text="convertMoney(parcelDetails.receive)"></b>
                         </div>
                       </v-alert>
                     </v-flex>
@@ -187,7 +188,7 @@
                         </template>
                         <template v-slot:item.acao="{ item }">
                           <v-btn
-                            @click="innstallmentDetails(item)"
+                            @click="getInstallment(item)"
                             x-small
                             rounded
                             outlined
@@ -203,7 +204,7 @@
               </div>
 
               <v-layout row justify-center>
-                <v-dialog v-model="innstallment" persistent max-width="500px">
+                <v-dialog v-model="innstallment" persistent max-width="700px">
                   <v-card flat>
                     <v-toolbar dense flat dark color="primary">
                       <v-toolbar-title>Detalhes</v-toolbar-title>
@@ -213,49 +214,93 @@
                       </v-btn>
                     </v-toolbar>
                     <div class="col-sm-12">
+                      <v-alert v-show="showAlert" dense text type="info" dismissible>{{msg}}</v-alert>
                       <div class="pa-4 d-flex justify-space-between">
                         <b>Parcela {{installmentsResume.id}}</b>
-                        <b>{{installmentsResume.status}}</b>
+                        <v-chip small :color="getColor(installmentsResume.status)" dark>
+                          <b>{{installmentsResume.status}}</b>
+                        </v-chip>
                       </div>
+                      <v-layout class="d-flex justify-space-between">
+                        <v-flex xs12 sm8 md8 class="mr-3">
+                          <v-alert
+                            dense
+                            outlined
+                            icon="mdi-clipboard-alert-outline"
+                            border="left"
+                            color="indigo"
+                            type="error"
+                          >
+                            <div>Valor da parcela</div>
+                            <v-divider></v-divider>
+                            <div>
+                              <b v-text="convertMoney(installmentsResume.value)"></b>
+                            </div>
+                          </v-alert>
+                        </v-flex>
+
+                        <v-flex xs12 sm6 md4>
+                          <v-alert
+                            icon="mdi-firework"
+                            border="left"
+                            color="indigo"
+                            dense
+                            type="info"
+                          >
+                            <div>Valor Restante</div>
+                            <v-divider></v-divider>
+                            <div>
+                              <b v-text="convertMoney(installmentsResume.remaing)"></b>
+                            </div>
+                          </v-alert>
+                        </v-flex>
+                      </v-layout>
+                      <v-layout v-if="parcelRemaing != '0.00'">
+                        <v-flex xs12 sm8 md8 class="mr-3">
+                          <v-text-field
+                            outlined
+                            v-model="receiveValue"
+                            small
+                            dense
+                            flat
+                            label="Valor á receber"
+                          ></v-text-field>
+                        </v-flex>
+                        <v-flex xs12 sm6 md4>
+                          <v-btn block outlined @click="sendReceive()" color="primary">Receber</v-btn>
+                        </v-flex>
+                      </v-layout>
                       <v-divider></v-divider>
                       <div class="pa-4 subtitle-2">
                         <b>Historico de Cobrança</b>
                       </div>
-                      <v-list two-line>
-                        <v-list-item>
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              <v-icon class="ma-2">mdi-calendar-check-outline</v-icon>Pagamento parcial
-                            </v-list-item-title>
-                          </v-list-item-content>
-                          <v-list-item-action>
-                            <v-list-item-title>24/02/2015</v-list-item-title>
-                          </v-list-item-action>
-                        </v-list-item>
-                        <v-divider></v-divider>
-                        <v-list-item>
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              <v-icon class="ma-2">mdi-calendar-check-outline</v-icon>Pagamento parcial
-                            </v-list-item-title>
-                          </v-list-item-content>
-                          <v-list-item-action>
-                            <v-list-item-title>24/02/2015</v-list-item-title>
-                          </v-list-item-action>
-                        </v-list-item>
-                        <v-divider></v-divider>
-                        <v-list-item>
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              <v-icon class="ma-2">mdi-calendar-check-outline</v-icon>Pagamento parcial
-                            </v-list-item-title>
-                          </v-list-item-content>
-                          <v-list-item-action>
-                            <v-list-item-title>24/02/2015</v-list-item-title>
-                          </v-list-item-action>
-                        </v-list-item>
-                        <v-divider></v-divider>
-                      </v-list>
+
+                      <div v-if="historic">
+                        <v-list v-for="item in historic" :key="item.id" two-line>
+                          <v-list-item>
+                            <v-list-item-avatar>
+                              <v-icon>mdi-calendar-check-outline</v-icon>
+                            </v-list-item-avatar>
+                            <v-list-item-content>
+                              <v-list-item-title>{{item.details}}</v-list-item-title>
+                              <v-list-item-subtitle v-text="convertMoney(item.amount)"></v-list-item-subtitle>
+                            </v-list-item-content>
+                            <v-list-item-action>
+                              <v-list-item-title v-text="convertDate(item.date)"></v-list-item-title>
+                              <v-list-item-subtitle>{{item.hour}}</v-list-item-subtitle>
+                            </v-list-item-action>
+                          </v-list-item>
+                          <v-divider></v-divider>
+                        </v-list>
+                      </div>
+                      <div v-else>
+                        <v-alert
+                          icon="mdi-alert-box"
+                          prominent
+                          text
+                          type="info"
+                        >Não existe historico de cobrança para essa parcela</v-alert>
+                      </div>
                     </div>
                   </v-card>
                 </v-dialog>
@@ -335,16 +380,22 @@ export default {
       { text: 'Ações', value: 'acao', sortable: false },
 
     ],
-    installmentsResume:[
+    installmentsResume: [
       {
         id: '',
-        value:'',
-        date:'',
-        remaing:'',
-        historic:'',
-        status:''
+        value: '',
+        date: '',
+        remaing: '',
+        historic: '',
+        status: ''
       }
-    ]
+    ],
+    parcelValue: '',
+    parcelRemaing: '',
+    historic: '',
+    receiveValue: '',
+    showAlert: false,
+    msg: '',
 
   }),
   methods: {
@@ -363,7 +414,7 @@ export default {
           contracts.push(contract)
         })
         this.listContracts = contracts
-        // console.log(this.listContracts)
+        //console.log(this.listContracts)
         // document.getElementById('resp').innerHTML = json
       })
     },
@@ -374,6 +425,7 @@ export default {
       else if (status == "RECEBIDA") return 'primary'
       else if (status == "PENDENTE") return 'amber'
       else if (status == "COBRADO") return 'purple darken-3'
+      else if (status == "CANCELADO") return 'red'
       else return 'green'
     },
 
@@ -386,11 +438,15 @@ export default {
       var mydate = new Date(parts[0], parts[1] - 1, parts[2]);
       return mydate.toLocaleDateString();
     },
-    viewContract(item) {
-      this.contractView = true
-
+    convertMoney(money) {
       const toCurrency = (n, curr, LanguageFormat = undefined) =>
         Intl.NumberFormat(LanguageFormat, { style: 'currency', currency: curr }).format(n);
+      return (toCurrency(money, 'BRL'))
+
+
+    },
+    viewContract(item) {
+      this.contractView = true
       let form = new FormData()
       form.append('get-contract', 'true')
       form.append('contract-id', item.id)
@@ -416,13 +472,12 @@ export default {
             .join(' ')
 
           this.parcelDetails.clientName = name
-
           this.installments = element.installments
           this.parcelDetails.qtdParcel = element.installments.length
           console.log(this.installments);
 
           //capturando valor do plano
-          this.parcelDetails.planValue = (toCurrency(element.plan[0].value, 'BRL'))
+          this.parcelDetails.planValue = element.plan[0].value
 
           switch (element.status) {
             case 'VENCIDA':
@@ -481,15 +536,10 @@ export default {
                 break;
             }
           })
-
-
-
-
-
-          this.parcelDetails.receive = (toCurrency(totalRecebida, 'BRL'))
-          this.parcelDetails.pending = (toCurrency(totalPendente, 'BRL'))
-          this.parcelDetails.charged = (toCurrency(totalCobrado, 'BRL'))
-          this.parcelDetails.unsuccessful = (toCurrency(totalVencida, 'BRL'))
+          this.parcelDetails.receive = totalRecebida
+          this.parcelDetails.pending = totalPendente
+          this.parcelDetails.charged = totalCobrado
+          this.parcelDetails.unsuccessful = totalVencida
           this.parcelDetails.qtdCharged = qtdCobrado
           this.parcelDetails.qtdUnsuccessful = qtdVencida
           this.parcelDetails.qtdReceive = qtdRecebida
@@ -502,7 +552,16 @@ export default {
 
     },
     innstallmentDetails(parcel) {
-      console.log(parcel.historic);
+      console.log(parcel);
+      let array = []
+      array.push(JSON.parse(parcel.historic))
+
+      array.forEach((item, key) => {
+        this.historic = item
+      })
+      this.parcelValue = parcel.value
+      this.parcelRemaing = parcel.remaing
+      this.installmentsResume.historic = array[0]
       this.installmentsResume.id = parcel.id
       this.installmentsResume.status = parcel.status
       this.installmentsResume.date = parcel.date
@@ -510,9 +569,131 @@ export default {
       this.installmentsResume.value = parcel.value
       this.installmentsResume.historic = parcel.historic
       this.innstallment = true
-    }
+    },
+    getInstallment(item) {
+      this.contractView = true
+      const url = `${vars.host}parcelController.php`;
+      let formData = new FormData();
+      formData.append("parcelinfo", "true");
+      formData.append("parcel-id", item.id);
+      localStorage.setItem("parcel-id", item.id);
+      fetch(url, {
+        method: "POST",
+        body: formData
+      })
+        .then(resp => {
+          return resp.json();
+        })
+        .then(json => {
+          console.log(json);
 
-  },
+          let parcel = json[0]
+
+          console.log(parcel.id);
+          // document.getElementById('resp').innerHTML = json
+          let array = [];
+          json.forEach(item => {
+            if (item.historic) array.push(JSON.parse(item.historic));
+          });
+          array.forEach((item, key) => {
+            this.installmentsResume.historic = item;
+          });
+          this.parcelValue = parcel.value
+          this.parcelRemaing = parcel.remaing
+          this.installmentsResume.id = parcel.id
+          this.installmentsResume.status = parcel.status
+          this.installmentsResume.date = parcel.date
+          this.installmentsResume.remaing = parcel.remaing
+          this.installmentsResume.value = parcel.value
+          this.installmentsResume.historic = parcel.historic
+          this.innstallment = true
+
+
+
+          // console.log(status)
+          switch (status) {
+            case "PENDENTE":
+              (this.background = "bg-warning"),
+                (this.icon = "mdi mdi-information-outline text-dark");
+              this.receive = 1;
+              break;
+            case "COBRADO":
+              this.background = "bg-charged text-white";
+              this.icon = "mdi mdi-close-circle-outline text-white";
+              this.receive = 2;
+              break;
+            case "RECEBIDA":
+              this.background = "bg-primary text-white";
+              this.icon = "mdi mdi-checkbox-marked-circle-outline text-white";
+              this.receive = 3;
+              break;
+            default:
+              break;
+          }
+        });
+    },
+    sendReceive() {
+      if (
+        localStorage.getItem("boxId") != "" &&
+        localStorage.getItem("boxId") != "null"
+      ) {
+        let form = new FormData();
+        let send = false;
+        if (
+          parseFloat(this.receiveValue) ==
+          parseFloat(this.parcelValue) ||
+          parseFloat(this.receiveValue) == parseFloat(this.installmentsResume.remaing)
+        ) {
+          form.append("status", "RECEBIDA");
+          form.append("details", "Pagamento completo");
+          send = true;
+        }
+        if (
+          parseFloat(this.receiveValue) < parseFloat(this.installmentsResume.remaing) &&
+          parseFloat(this.receiveValue) > 0
+        ) {
+          form.append("status", "COBRADO");
+          form.append("details", "Pagamento parcial");
+          send = true;
+        }
+        let remaing = this.installmentsResume.remaing - this.receiveValue;
+        if (remaing == 0) {
+          form.append("status", "RECEBIDA");
+          form.append("details", "Pagamento final");
+        }
+
+        form.append("remaing", remaing);
+        form.append("user-id", localStorage.getItem("user-id"));
+        form.append("box-id", localStorage.getItem("boxId"));
+        form.append("id", this.installmentsResume.id);
+        form.append("amount", this.receiveValue);
+        form.append("pay", this.receiveValue);
+        if (send) {
+          const url = `${vars.host}parcelController.php`;
+          fetch(url, {
+            method: "POST",
+            body: form
+          })
+            .then(resp => {
+              return resp.json();
+            })
+            .then(json => {
+              // document.getElementById('resp').innerHTML = json
+              // console.log(json);
+              this.msg = json.msg;
+              this.showAlert = true
+              // this.installmentsResume.remaing = remaing
+            });
+        } else {
+          this.msg = "Valor inválido";
+          this.snackbar = true;
+
+        }
+      } else {
+        this.errorCaixa = true;
+      }
+    },
+  }
 
 }
 </script>

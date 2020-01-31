@@ -202,7 +202,7 @@ export default {
           value: 'id',
         },
         { text: 'Cliente', value: 'client.name' },
-        { text: 'Vencimento', value: 'date'},
+        { text: 'Vencimento', value: 'date' },
         { text: 'Status', value: 'status' },
 
       ],
@@ -269,7 +269,7 @@ export default {
       })
     },
 
-   
+
     getColor(status) {
       switch (status) {
         case "VENCIDA":

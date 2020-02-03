@@ -285,18 +285,13 @@ export default {
       },
     },
     editClient: false,
-    dropdown_icon: [
-      { text: 'list', callback: () => console.log('list') },
-      { text: 'favorite', callback: () => console.log('favorite') },
-      { text: 'delete', callback: () => console.log('delete') },
-    ],
+
   }),
   methods: {
 
     getColor(status) {
       if (status == "Ativo") return 'primary'
       else if (status == "Inativo") return 'orange'
-      
       else return 'green'
     },
     listAllClients() {
@@ -355,23 +350,23 @@ export default {
         form.append('tel', this.editedItem.tel)
         form.append('type', this.editedItem.type)
         form.append('status', "Ativo")
-         form.append('street', this.editedItem.adress.street)
+        form.append('street', this.editedItem.adress.street)
         form.append('district', this.editedItem.adress.district)
         form.append('number', this.editedItem.adress.number)
         form.append('cep', this.editedItem.adress.cep)
         form.append('complement', this.editedItem.adress.complement)
-          fetch(url, {
-            method: 'POST',
-            body: form
-          }).then(resp => {
-            return resp.json()
-          }).then(json => {
-            this.clients = []
-            this.listAllClients()
-                      this.dialog = false
+        fetch(url, {
+          method: 'POST',
+          body: form
+        }).then(resp => {
+          return resp.json()
+        }).then(json => {
+          this.clients = []
+          this.listAllClients()
+          this.dialog = false
 
 
-          })
+        })
       }
     },
 

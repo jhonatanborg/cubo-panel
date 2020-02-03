@@ -398,7 +398,7 @@ export default {
 
   }),
   methods: {
-    getContractsDay(date = this.date) {      
+    getContractsDay(date = this.date) {
       let form = new FormData()
       form.append('get-contracts', 'true')
       form.append('date', date)

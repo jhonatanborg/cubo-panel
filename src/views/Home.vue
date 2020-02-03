@@ -216,6 +216,7 @@ export default {
     this.unsuccessful();
     this.installmentsAll();
     this.listAllPlans();
+    this.verifyLogin()
   },
   data() {
     return {
@@ -475,7 +476,12 @@ export default {
           console.log(p.p11, p.p24);
         }
       });
-    }
+    },
+    verifyLogin() {
+      if (!localStorage.getItem('user-id') && !localStorage.getItem('user-name')) {
+        this.$router.push('/')
+      }
+    },
   },
   watch: {
     model(val) {

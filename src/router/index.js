@@ -24,6 +24,16 @@ const routes = [{
     name: 'contract',
     component: () => import('../views/Contract.vue')
   },
+  {
+    path: '/users',
+    name: 'users',
+    component: () => import('../views/Users.vue')
+  },
+  {
+    path: '/boxes',
+    name: 'boxes',
+    component: () => import('../views/Boxes.vue')
+  },
 ]
 
 const router = new VueRouter({

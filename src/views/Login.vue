@@ -17,7 +17,6 @@
                 <v-card-text>
                   <v-text-field v-model="user" dense label="Login" type="e-mail" outlined />
                   <v-text-field dense v-model="pass" label="Senha" type="password" outlined />
-
                   <v-alert v-show="erroLogin" type="error" :value="true" dense outlined>
                     <div class="subtitle">{{msg}}</div>
                   </v-alert>
@@ -74,11 +73,7 @@ export default {
     },
   },
   methods: {
-    verifyLogin() {
-      if (localStorage.getItem('user-id') && localStorage.getItem('user-name')) {
-        this.$router.push('/')
-      }
-    },
+
     login() {
       this.loader = 'loading'
       let form = new FormData()
@@ -92,25 +87,25 @@ export default {
       }).then(resp => {
         return resp.json()
       }).then(json => {
-        // let json = JSON.parse(obj)
-        // console.log(json)
-        // document.getElementById('resp').innerHTML = json
+
         if (json.status === 'Ativo') {
           localStorage.setItem('user-name', json.name)
           localStorage.setItem('user-id', json.userId)
           localStorage.setItem('boxStatus', json.box_status[1])
           localStorage.setItem('boxId', json.box_status[0])
           localStorage.setItem('level', json.level)
-          this.$router.push('/')
+          this.$router.push('home')
         } else {
           this.erroLogin = true
           this.msg = json.msg
           console.log(json);
+          this.loader = null
         }
       })
 
     }
-  }
+  },
+
 }
 </script>
 

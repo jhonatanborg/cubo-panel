@@ -19,7 +19,7 @@
               <v-list-item-title>Clientes</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item>
+          <v-list-item to="boxes" color="primary">
             <v-list-item-action>
               <v-icon>mdi-animation-outline</v-icon>
             </v-list-item-action>
@@ -33,6 +33,14 @@
             </v-list-item-action>
             <v-list-item-content>
               <v-list-item-title>Contratos</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item to="users" color="primary">
+            <v-list-item-action>
+              <v-icon>mdi-clipboard-account-outline</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Usuarios</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -88,7 +96,7 @@ export default {
       { icon: 'mdi-contacts', text: 'Clientes', router: 'clients' },
       { icon: 'mdi-history', text: 'Caixas', router: 'caixas' },
       { icon: 'mdi-content-copy', text: 'Parcelas', router: 'relatorio' },
-      { icon: 'mdi-settings', text: 'Configurações' },
+      { icon: 'mdi-settings', text: 'Configurações', },
       { icon: 'mdi-help-circle', text: 'Ajuda' },
     ],
 

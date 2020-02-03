@@ -4,7 +4,7 @@
     <div>
       <v-container flat class>
         <v-divider class="pt-2"></v-divider>
-        <v-layout class="col-sm-12 pa-2 ma-2 d-flex justify-space-between">
+        <v-layout class="col-sm-12 d-flex justify-space-between">
           <v-flex xs12 sm6 md3 class="mr-3">
             <v-alert icon="mdi-firework" border="left" color="blue lighten-1" dark outlined>
               <div>Recebidas</div>
@@ -53,15 +53,11 @@
             </v-alert>
           </v-flex>
         </v-layout>
-
-        <v-layout class="col-sm-12 pa-2 ma-2 d-flex justify-space-between">
-          <v-btn @click="newloan = true" color="blue lighten-1" dark>Novo emprestimo</v-btn>
-        </v-layout>
-
-        <div class="mt-5" fluid>
+        <div fluid>
           <div>
-            <v-card flat class="col-sm-12">
+            <v-card outlined flat class="col-sm-12">
               <v-card-title color="red">
+                <v-spacer></v-spacer>
                 <div class="d-flex justify-space-between">
                   <v-text-field
                     v-model="search"
@@ -73,9 +69,18 @@
                     dense
                     class="mr-2"
                   ></v-text-field>
+                  <v-btn @click="newloan = true" color="blue lighten-1" dark>Novo emprestimo</v-btn>
                 </div>
               </v-card-title>
-              <v-data-table :headers="headers" :items="listParcel" :search="search">
+              <v-data-table
+                :headers="headers"
+                :items="listParcel"
+                :search="search"
+                :items-per-page="5"
+              >
+                <template v-slot:item.client.name="{ item }">
+                  <div small v-text="clientNameUpper(item.client.name)" dark></div>
+                </template>
                 <template v-slot:item.status="{ item }">
                   <v-chip x-small :color="getColor(item.status)" dark>
                     {{
@@ -99,8 +104,19 @@
               <v-icon>mdi-close</v-icon>
             </v-btn>
           </v-toolbar>
+
+          <v-progress-linear
+            :active="loading"
+            :indeterminate="loading"
+            absolute
+            height="5"
+            color="deep-purple accent-4"
+          ></v-progress-linear>
           <div class="col-sm-12">
-            <v-card v-if="loadingLoan" flat class="pa-4">
+            <v-alert v-show="succesAlert" dense text type="info" dismissible>{{msg}}</v-alert>
+            <v-alert v-show="errorAlert" dense text type="error" dismissible>{{msg}}</v-alert>
+
+            <v-card flat class="pa-4">
               <v-autocomplete
                 class="mb-5"
                 v-model="planSelect.idClient"
@@ -182,14 +198,6 @@
               </div>
               <v-btn block color="primary" @click="getInstallments()" dark>Confirmar</v-btn>
             </v-card>
-            <v-progress-circular
-              v-else
-              :rotate="-90"
-              :size="100"
-              :width="15"
-              :value="value"
-              color="primary"
-            >{{ value }}</v-progress-circular>
           </div>
         </v-card>
       </v-dialog>
@@ -211,9 +219,10 @@ export default {
   },
   data() {
     return {
-      loadingLoan: true,
-      interval: {},
-      value: 100,
+      msg: "",
+      succesAlert: false,
+      errorAlert: false,
+      loading: false,
       newloan: false,
       p11: "",
       p24: "",
@@ -242,7 +251,7 @@ export default {
       listParcel: [],
       headers: [
         {
-          text: "Parcela-id",
+          text: "Código",
           align: "left",
           value: "id"
         },
@@ -252,15 +261,11 @@ export default {
       ]
     };
   },
-  mounted() {
-    this.interval = setInterval(() => {
-      if (this.value === 100) {
-        return (this.value = 0)
-      }
-      this.value += 10
-    }, 1000)
-  },
   methods: {
+    clientNameUpper(name) {
+      let clientName = name.split(' ').map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' ')
+      return clientName
+    },
     unsuccessful() {
       const url = `${vars.host}parcelController.php`;
       let formData = new FormData();
@@ -289,9 +294,10 @@ export default {
           return resp.json();
         })
         .then(json => {
+          console.log(json);
+
           this.listParcel = json;
           this.installmentsTotal = json.length;
-          this.isLoading = false;
           let totalVencida = 0;
           let totalPendente = 0;
           let totalCobrada = 0;
@@ -429,6 +435,7 @@ export default {
       this.confirm();
     },
     confirm() {
+      this.loading = true
       const url = `${vars.host}contractController.php`;
       let form = new FormData();
       form.append("confirm", "true");
@@ -445,13 +452,19 @@ export default {
           return resp.json();
         })
         .then(json => {
-          console.log(json);
+          this.msg = json.msg
+          console.log(json.msg);
           // document.getElementById("respp").innerHTML = json
           if (json.msg.indexOf("Sucesso") > 0) {
-            this.success = true;
+            this.succesAlert = true;
             // alert(json.msg)
             // this.$router.push('home')
+            this.loading = false
+          } else {
+
+            this.errorAlert = true
           }
+
         });
     },
     onChange(event) {
@@ -468,6 +481,11 @@ export default {
     model(val) {
       if (val != null) this.tab = 0;
       else this.tab = null;
+    },
+    loading(val) {
+      if (!val) return
+
+      setTimeout(() => (this.loading = false), 3000)
     },
 
     search(val) {

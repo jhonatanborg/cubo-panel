@@ -312,7 +312,6 @@
     </v-content>
   </div>
 </template>
-
 <script>
 import vars from '../plugins/env.local'
 import Menu from '../components/Menu';

@@ -3,7 +3,7 @@
     <v-navigation-drawer v-model="drawer" :clipped="$vuetify.breakpoint.lgAndUp" app>
       <v-list dense>
         <template>
-          <v-list-item to="/" color="primary">
+          <v-list-item to="/home" color="primary">
             <v-list-item-action>
               <v-icon>mdi-view-dashboard-outline</v-icon>
             </v-list-item-action>
@@ -56,7 +56,7 @@
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title style="width: 300px" class="ml-0 pl-4">
-        <span  class="hidden-sm-and-down text-white" >Cubo Painel</span>
+        <span class="hidden-sm-and-down text-white">Cubo Painel</span>
       </v-toolbar-title>
       <v-spacer />
       <v-btn icon>

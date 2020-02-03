@@ -188,7 +188,7 @@
                         </template>
                         <template v-slot:item.acao="{ item }">
                           <v-btn
-                            @click="getInstallment(item)"
+                            @click="getInstallment(item.id)"
                             x-small
                             rounded
                             outlined
@@ -399,7 +399,7 @@ export default {
 
   }),
   methods: {
-    getContractsDay(date = this.date) {
+    getContractsDay(date = this.date) {      
       let form = new FormData()
       form.append('get-contracts', 'true')
       form.append('date', date)
@@ -571,12 +571,15 @@ export default {
       this.innstallment = true
     },
     getInstallment(item) {
+
+      console.log(item);
+
       this.contractView = true
       const url = `${vars.host}parcelController.php`;
       let formData = new FormData();
       formData.append("parcelinfo", "true");
-      formData.append("parcel-id", item.id);
-      localStorage.setItem("parcel-id", item.id);
+      formData.append("parcel-id", item);
+      localStorage.setItem("parcel-id", item);
       fetch(url, {
         method: "POST",
         body: formData
@@ -585,18 +588,13 @@ export default {
           return resp.json();
         })
         .then(json => {
-          console.log(json);
-
           let parcel = json[0]
-
-          console.log(parcel.id);
-          // document.getElementById('resp').innerHTML = json
           let array = [];
           json.forEach(item => {
             if (item.historic) array.push(JSON.parse(item.historic));
           });
           array.forEach((item, key) => {
-            this.installmentsResume.historic = item;
+            this.historic = item;
           });
           this.parcelValue = parcel.value
           this.parcelRemaing = parcel.remaing
@@ -607,29 +605,7 @@ export default {
           this.installmentsResume.value = parcel.value
           this.installmentsResume.historic = parcel.historic
           this.innstallment = true
-
-
-
-          // console.log(status)
-          switch (status) {
-            case "PENDENTE":
-              (this.background = "bg-warning"),
-                (this.icon = "mdi mdi-information-outline text-dark");
-              this.receive = 1;
-              break;
-            case "COBRADO":
-              this.background = "bg-charged text-white";
-              this.icon = "mdi mdi-close-circle-outline text-white";
-              this.receive = 2;
-              break;
-            case "RECEBIDA":
-              this.background = "bg-primary text-white";
-              this.icon = "mdi mdi-checkbox-marked-circle-outline text-white";
-              this.receive = 3;
-              break;
-            default:
-              break;
-          }
+          console.log(parcel);
         });
     },
     sendReceive() {
@@ -682,8 +658,9 @@ export default {
               // console.log(json);
               this.msg = json.msg;
               this.showAlert = true
+              this.getInstallment(this.installmentsResume.id)
               // this.installmentsResume.remaing = remaing
-            });
+            })
         } else {
           this.msg = "Valor inválido";
           this.snackbar = true;

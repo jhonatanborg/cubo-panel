@@ -19,7 +19,7 @@
               <v-list-item-title>Clientes</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item >
+          <v-list-item>
             <v-list-item-action>
               <v-icon>mdi-animation-outline</v-icon>
             </v-list-item-action>
@@ -50,15 +50,13 @@
       dense
       :clipped-left="$vuetify.breakpoint.lgAndUp"
       app
-      color="purple darken-3"
+      color="blue lighten-1"
       flat
-      text-color="white"
-      
-
+      dark
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title style="width: 300px" class="ml-0 pl-4">
-        <span class="hidden-sm-and-down">Cubo Painel</span>
+        <span  class="hidden-sm-and-down text-white" >Cubo Painel</span>
       </v-toolbar-title>
       <v-spacer />
       <v-btn icon>

@@ -59,13 +59,41 @@
               <v-card-title color="red">
                 <v-spacer></v-spacer>
                 <div class="d-flex justify-space-between">
+                  <v-menu
+                    ref="menu"
+                    v-model="menu"
+                    :close-on-content-click="false"
+                    :return-value.sync="date"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on }">
+                      <v-text-field
+                        class="mr-5"
+                        v-model="date"
+                        label="Data"
+                        outlined
+                        dense
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker locale="pt-br" v-model="date" no-title scrollable>
+                      <v-spacer></v-spacer>
+                      <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+                      <v-btn text color="primary" @click="$refs.menu.save(date)">OK</v-btn>
+                    </v-date-picker>
+                  </v-menu>
+                  <p v-text="convertDate(date)">{{}}</p>
+                  <v-btn class="mr-5" color="blue lighten-1" dense dark>Buscar</v-btn>
+
                   <v-text-field
+                    outlined
                     v-model="search"
                     append-icon="mdi-magnify"
                     label="Buscar"
                     single-line
                     hide-details
-                    solo
                     dense
                     class="mr-2"
                   ></v-text-field>
@@ -175,7 +203,6 @@
                   class="d-flex justify-space-between"
                 >
                   <v-radio color="primary" value="11" v-bind:label="'11 parcelas de ' + this.p11"></v-radio>
-
                   <v-radio color="primary" value="24" v-bind:label="'24 parcelas de ' + this.p24"></v-radio>
                 </v-radio-group>
               </div>
@@ -218,51 +245,66 @@ export default {
     this.listAllPlans();
     this.verifyLogin()
   },
-  data() {
-    return {
-      msg: "",
-      succesAlert: false,
-      errorAlert: false,
-      loading: false,
-      newloan: false,
-      p11: "",
-      p24: "",
-      planSelect: {
-        idClient: "",
-        idPlano: "",
-        planValue: "",
-        quantityParcel: "",
-        parcelValue: "",
-        daysValue: [],
-        installments: []
-      },
-      row: null,
-      isLoading: false,
-      items: [],
+  data: () => ({
+    date: new Date().toISOString().substr(0, 10),
+    dateFormatted: '',
+    menu: false,
+    modal: false,
+    menu2: false,
+    msg: "",
+    succesAlert: false,
+    errorAlert: false,
+    loading: false,
+    newloan: false,
+    p11: "",
+    p24: "",
+    planSelect: {
       idClient: "",
-      search: '',
-      tab: null,
-      parcel: [],
-      interval: {},
-      value: 0,
-      plans: [],
-      tabs: null,
-      Buscar: "",
-      search: "",
-      listParcel: [],
-      headers: [
-        {
-          text: "Código",
-          align: "left",
-          value: "id"
-        },
-        { text: "Cliente", value: "client.name" },
-        { text: "Vencimento", value: "date" },
-        { text: "Status", value: "status" }
-      ]
-    };
+      idPlano: "",
+      planValue: "",
+      quantityParcel: "",
+      parcelValue: "",
+      daysValue: [],
+      installments: []
+    },
+    row: null,
+    isLoading: false,
+    items: [],
+    idClient: "",
+    search: '',
+    tab: null,
+    parcel: [],
+    interval: {},
+    value: 0,
+    plans: [],
+    tabs: null,
+    Buscar: "",
+    search: "",
+    listParcel: [],
+    headers: [
+      {
+        text: "Código",
+        align: "left",
+        value: "id"
+      },
+      { text: "Cliente", value: "client.name" },
+      { text: "Vencimento", value: "date" },
+      { text: "Status", value: "status" }
+    ]
+  }),
+  computed: {
+    convertDate(date) {
+      var parts = date.split(" ")[0].split("-");
+      var mydate = new Date(parts[0], parts[1] - 1, parts[2]);
+      return mydate.toLocaleDateString();
+    },
   },
   methods: {
+    convertDate(date) {
+      var parts = date.split(" ")[0].split("-");
+      var mydate = new Date(parts[0], parts[1] - 1, parts[2]);
+      return mydate.toLocaleDateString();
+    },
     clientNameUpper(name) {
       let clientName = name.split(' ').map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' ')
       return clientName
@@ -482,6 +524,10 @@ export default {
         this.$router.push('/')
       }
     },
+
+  },
+  computed: {
+
   },
   watch: {
     model(val) {

@@ -43,14 +43,6 @@
               <v-list-item-title>Usuarios</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-action>
-              <v-icon>mdi-clipboard-outline</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Relatorios</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
         </template>
       </v-list>
     </v-navigation-drawer>

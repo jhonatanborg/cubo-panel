@@ -67,7 +67,7 @@
               </v-toolbar>
 
               <v-divider></v-divider>
-              <div class="col-sm-12">
+              <div class="container pa-3 col-sm-12">
                 <div class="d-flex justify-space-between">
                   <div>
                     Código do caixa
@@ -81,11 +81,11 @@
                   </div>
                 </div>
                 <v-divider class="mb-5 mt-4"></v-divider>
-                <v-layout class="d-flex justify-space-between">
+                <v-layout class="col-sm-12 d-flex justify-space-between">
                   <v-flex xs12 sm6 md3 class="mr-3">
                     <v-alert icon="mdi-firework" border="left" color="indigo accent-3" dark>
                       <div>
-                        Total
+                        Saldo
                         <b></b>
                       </div>
                       <v-divider></v-divider>
@@ -140,10 +140,160 @@
                     </v-alert>
                   </v-flex>
                 </v-layout>
+                <v-card outlined flat class="col-sm-12">
+                  <v-card-title color="red">
+                    Clientes
+                    <v-spacer></v-spacer>
+                    <div class="d-flex justify-space-between">
+                      <v-text-field
+                        v-model="search"
+                        append-icon="mdi-magnify"
+                        label="Buscar"
+                        single-line
+                        hide-details
+                        solo
+                        dense
+                        class="mr-2"
+                      ></v-text-field>
+                    </div>
+                  </v-card-title>
+                  <v-data-table
+                    locale="pt"
+                    :headers="headersParcel"
+                    :items="boxResume.installmentsBox"
+                    :items-per-page="5"
+                    :search="search"
+                  >
+                    <template v-slot:item.installment[0].status="{ item }">
+                      <v-chip
+                        small
+                        :color="getColor(item.installment[0].status)"
+                        dark
+                      >{{ item.installment[0].status}}</v-chip>
+                    </template>
+
+                    <template v-slot:item.installment[0].client.name="{ item }">
+                      <div small v-text="clientNameUpper(item.installment[0].client.name)" dark></div>
+                    </template>
+                    <template v-slot:item.installment[0].value="{ item }">
+                      <div small v-text="convertMoney(item.installment[0].value)" dark></div>
+                    </template>
+                    <template v-slot:item.recinValue="{ item }">
+                      <div small v-text="convertMoney(item.recinValue)" dark></div>
+                    </template>
+                    <template v-slot:item.acao="{ item }">
+                      <v-btn
+                        @click="getInstallment(item.installment[0].id)"
+                        x-small
+                        rounded
+                        outlined
+                        color="primary"
+                      >
+                        <v-icon left>mdi-eye</v-icon>Visualizar
+                      </v-btn>
+                    </template>
+                  </v-data-table>
+                </v-card>
               </div>
             </v-card>
           </v-dialog>
         </v-row>
+        <v-layout row justify-center>
+          <v-dialog v-model="innstallment" persistent max-width="700px">
+            <v-card flat>
+              <v-toolbar dense flat dark color="primary">
+                <v-toolbar-title>Detalhes</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-btn @click="innstallment = false" icon dark>
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </v-toolbar>
+              <div class="col-sm-12">
+                <v-alert v-show="showAlert" dense text type="info" dismissible>{{msg}}</v-alert>
+                <div class="pa-4 d-flex justify-space-between">
+                  <b>Parcela {{installmentsResume.id}}</b>
+                  <v-chip small :color="getColor(installmentsResume.status)" dark>
+                    <b>{{installmentsResume.status}}</b>
+                  </v-chip>
+                </div>
+                <v-layout class="d-flex justify-space-between">
+                  <v-flex xs12 sm8 md8 class="mr-3">
+                    <v-alert
+                      dense
+                      outlined
+                      icon="mdi-clipboard-alert-outline"
+                      border="left"
+                      color="indigo"
+                      type="error"
+                    >
+                      <div>Valor da parcela</div>
+                      <v-divider></v-divider>
+                      <div>
+                        <b v-text="convertMoney(installmentsResume.value)"></b>
+                      </div>
+                    </v-alert>
+                  </v-flex>
+
+                  <v-flex xs12 sm6 md4>
+                    <v-alert icon="mdi-firework" border="left" color="indigo" dense type="info">
+                      <div>Valor Restante</div>
+                      <v-divider></v-divider>
+                      <div>
+                        <b v-text="convertMoney(installmentsResume.remaing)"></b>
+                      </div>
+                    </v-alert>
+                  </v-flex>
+                </v-layout>
+                <v-layout v-if="parcelRemaing != '0.00'">
+                  <v-flex xs12 sm8 md8 class="mr-3">
+                    <v-text-field
+                      outlined
+                      v-model="receiveValue"
+                      small
+                      dense
+                      flat
+                      label="Valor á receber"
+                    ></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-btn block outlined @click="sendReceive()" color="primary">Receber</v-btn>
+                  </v-flex>
+                </v-layout>
+                <v-divider></v-divider>
+                <div class="pa-4 subtitle-2">
+                  <b>Historico de Cobrança</b>
+                </div>
+
+                <div v-if="historic">
+                  <v-list v-for="item in historic" :key="item.id" two-line>
+                    <v-list-item>
+                      <v-list-item-avatar>
+                        <v-icon>mdi-calendar-check-outline</v-icon>
+                      </v-list-item-avatar>
+                      <v-list-item-content>
+                        <v-list-item-title>{{item.details}}</v-list-item-title>
+                        <v-list-item-subtitle v-text="convertMoney(item.amount)"></v-list-item-subtitle>
+                      </v-list-item-content>
+                      <v-list-item-action>
+                        <v-list-item-title v-text="convertDate(item.date)"></v-list-item-title>
+                        <v-list-item-subtitle>{{item.hour}}</v-list-item-subtitle>
+                      </v-list-item-action>
+                    </v-list-item>
+                    <v-divider></v-divider>
+                  </v-list>
+                </div>
+                <div v-else>
+                  <v-alert
+                    icon="mdi-alert-box"
+                    prominent
+                    text
+                    type="info"
+                  >Não existe historico de cobrança para essa parcela</v-alert>
+                </div>
+              </div>
+            </v-card>
+          </v-dialog>
+        </v-layout>
       </v-container>
     </v-content>
   </div>
@@ -162,6 +312,7 @@ export default {
   },
   data: () => ({
     search: "",
+    innstallment: false,
     detailsBox: false,
     date: new Date(),
     menu: false,
@@ -181,6 +332,20 @@ export default {
       { text: "Status", value: "status" },
       { text: "Ações", value: "acao", sortable: false }
     ],
+    headersParcel: [
+      { text: "Código", value: "installment[0].id" },
+      {
+        text: "Cliente",
+        align: "left",
+        sortable: true,
+        value: "installment[0].client.name"
+      },
+      { text: "Parcela", value: "installment[0].value" },
+      { text: "Recebido", value: "recinValue" },
+
+      { text: "Status", value: "installment[0].status" },
+      { text: "Ações", value: "acao", sortable: false }
+    ],
     boxResume: {
       id: "",
       dateOpen: "",
@@ -190,7 +355,24 @@ export default {
       valueTotal: '',
       inputs: '',
       outputs: '',
-    }
+      installmentsBox: [],
+    },
+    installmentsResume: [
+      {
+        id: '',
+        value: '',
+        date: '',
+        remaing: '',
+        historic: '',
+        status: ''
+      }
+    ],
+    parcelValue: '',
+    parcelRemaing: '',
+    historic: '',
+    receiveValue: '',
+    showAlert: false,
+    msg: '',
   }),
   methods: {
     convertDate(date) {
@@ -262,12 +444,13 @@ export default {
           return resp.json();
         })
         .then(json => {
-          console.log(json);
+
+          this.boxResume.installmentsBox = json.installments
+          console.log(this.boxResume.installmentsBox);
 
           this.boxResume.valueTotal = json.valueTotal
           this.boxResume.inputs = json.inputs
           this.boxResume.outputs = json.outputs
-
           let resumeBox = [];
           json.boxInfo.forEach(resumeBox => {
             this.boxResume.id = resumeBox.boxId;
@@ -278,11 +461,140 @@ export default {
             .split(" ")
             .map(w => w[0].toUpperCase() + w.substr(1).toLowerCase())
             .join(" ");
-
-
-
         });
-    }
+
+    },
+    getInstallment(item) {
+      console.log(item);
+      this.contractView = true
+      const url = `${vars.host}parcelController.php`;
+      let formData = new FormData();
+      formData.append("parcelinfo", "true");
+      formData.append("parcel-id", item);
+      fetch(url, {
+        method: "POST",
+        body: formData
+      })
+        .then(resp => {
+          return resp.json();
+        })
+        .then(json => {
+          console.log(json);
+
+          let parcel = json[0]
+          let array = [];
+          json.forEach(item => {
+            if (item.historic) array.push(JSON.parse(item.historic));
+          });
+          array.forEach((item, key) => {
+            this.historic = item;
+          });
+          this.parcelValue = parcel.value
+          this.parcelRemaing = parcel.remaing
+          this.installmentsResume.id = parcel.id
+          this.installmentsResume.status = parcel.status
+          this.installmentsResume.date = parcel.date
+          this.installmentsResume.remaing = parcel.remaing
+          this.installmentsResume.value = parcel.value
+          this.installmentsResume.historic = parcel.historic
+          this.innstallment = true
+          console.log(parcel);
+        });
+    },
+    sendReceive() {
+      if (
+        localStorage.getItem("boxId") != "" &&
+        localStorage.getItem("boxId") != "null"
+      ) {
+        let form = new FormData();
+        let send = false;
+        if (
+          parseFloat(this.receiveValue) ==
+          parseFloat(this.parcelValue) ||
+          parseFloat(this.receiveValue) == parseFloat(this.installmentsResume.remaing)
+        ) {
+          form.append("status", "RECEBIDA");
+          form.append("details", "Pagamento completo");
+          send = true;
+        }
+        if (
+          parseFloat(this.receiveValue) < parseFloat(this.installmentsResume.remaing) &&
+          parseFloat(this.receiveValue) > 0
+        ) {
+          form.append("status", "COBRADO");
+          form.append("details", "Pagamento parcial");
+          send = true;
+        }
+        let remaing = this.installmentsResume.remaing - this.receiveValue;
+        if (remaing == 0) {
+          form.append("status", "RECEBIDA");
+          form.append("details", "Pagamento final");
+        }
+
+        form.append("remaing", remaing);
+        form.append("user-id", localStorage.getItem("user-id"));
+        form.append("box-id", localStorage.getItem("boxId"));
+        form.append("id", this.installmentsResume.id);
+        form.append("amount", this.receiveValue);
+        form.append("pay", this.receiveValue);
+        if (send) {
+          const url = `${vars.host}parcelController.php`;
+          fetch(url, {
+            method: "POST",
+            body: form
+          })
+            .then(resp => {
+              return resp.json();
+            })
+            .then(json => {
+              // document.getElementById('resp').innerHTML = json
+              // console.log(json);
+              this.msg = json.msg;
+              this.showAlert = true
+              this.getInstallment(this.installmentsResume.id)
+              // this.installmentsResume.remaing = remaing
+            })
+        } else {
+          this.msg = "Valor inválido";
+          this.snackbar = true;
+
+        }
+      } else {
+        this.errorCaixa = true;
+      }
+    },
+    searchFilter() {
+      // console.log(this.parcel)
+      // console.log(this.idClient)
+      // console.log(this.date1)
+      // console.log(this.date2)
+      // console.log(this.clients)
+      // console.log(this.parcel)
+      const url = `${vars.host}parcelController.php`
+      let formData = new FormData()
+      formData.append('filter', 'true')
+      formData.append('user-id', localStorage.getItem('user-id'))
+      formData.append('client-id', this.idClient)
+      formData.append('status', this.parcel)
+      formData.append('date-initial', this.date1)
+      formData.append('date-final', this.date2)
+      console.log(this.idClient)
+      // document.getElementById('load').classList.remove('hide')
+      fetch(url, {
+        method: 'POST',
+        body: formData
+      }).then(resp => {
+        return resp.json()
+      }).then(json => {
+        console.log(json);
+
+        // this.installments = json
+        // this.installmentsTotal = json.length
+        // console.log(this.installments)
+        // document.getElementById('load').classList.add('hide')
+        // this.sheet = false
+      })
+    },
   }
 };
 </script>

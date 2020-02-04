@@ -20,7 +20,7 @@
                 class="mr-2"
               ></v-text-field>
               <v-spacer></v-spacer>
-              <v-btn color="primary" @click.stop="userInsert  = true">Novo Usuário</v-btn>
+              <v-btn color="primary" @click.stop="userInsert = true">Novo Usuário</v-btn>
             </div>
           </v-card-title>
           <v-data-table
@@ -36,7 +36,11 @@
               <div small v-text="convertDate(item.openDate)" dark></div>
             </template>
             <template v-slot:item.status="{ item }">
-              <v-chip small :color="getColor(item.status)" dark>{{ item.status}}</v-chip>
+              <v-chip small :color="getColor(item.status)" dark>
+                {{
+                item.status
+                }}
+              </v-chip>
             </template>
             <template v-slot:item.userInfo[0].name="{ item }">
               <div small v-text="clientNameUpper(item.userInfo[0].name)" dark></div>
@@ -64,57 +68,75 @@
 
               <v-divider></v-divider>
               <div class="col-sm-12">
+                <div class="d-flex justify-space-between">
+                  <div>
+                    Código do caixa
+                    <b>{{ boxResume.id }}</b>
+                  </div>
+                  <v-spacer></v-spacer>
+                  <div>
+                    <v-chip small :color="getColor(boxResume.status)" dark>
+                      <b>{{ boxResume.status }}</b>
+                    </v-chip>
+                  </div>
+                </div>
+                <v-divider class="mb-5 mt-4"></v-divider>
                 <v-layout class="d-flex justify-space-between">
                   <v-flex xs12 sm6 md3 class="mr-3">
-                    <v-alert icon="mdi-firework" border="left" color="indigo" dark>
+                    <v-alert icon="mdi-firework" border="left" color="indigo accent-3" dark>
                       <div>
-                        Plano
+                        Total
                         <b></b>
                       </div>
                       <v-divider></v-divider>
                       <div>
-                        em
-                        <b></b> vezes
+                        <b v-text="convertMoney(boxResume.valueTotal)"></b>
                       </div>
                     </v-alert>
                   </v-flex>
                   <v-flex xs12 sm6 md3 class="mr-3">
-                    <v-alert icon="mdi-firework" border="left" color="indigo" dark>
+                    <v-alert icon="mdi-firework" border="left" color="indigo accent-3" dark>
                       <div>Entradas</div>
                       <v-divider></v-divider>
                       <div>
-                        <b>R$ 500,00</b>
+                        <b v-text="convertMoney(boxResume.inputs)"></b>
                       </div>
                     </v-alert>
                   </v-flex>
 
                   <v-flex xs12 sm6 md3 class="mr-3">
-                    <v-alert icon="mdi-clipboard-alert-outline" border="left" color="indigo" dark>
+                    <v-alert
+                      icon="mdi-clipboard-alert-outline"
+                      border="left"
+                      color="indigo accent-3"
+                      dark
+                    >
                       <div>Saídas</div>
                       <v-divider></v-divider>
                       <div>
-                        <b>R$ 50,00</b>
+                        <b v-text="convertMoney(boxResume.outputs)"></b>
                       </div>
                     </v-alert>
                   </v-flex>
                   <v-flex xs12 sm6 md3 class="mr-3 pb-1">
-                    <v-alert icon="mdi-clipboard-check-outline" border="left" color="indigo" dark>
+                    <v-alert
+                      icon="mdi-clipboard-check-outline"
+                      border="left"
+                      color="indigo accent-3"
+                      dark
+                    >
                       <div>Suprimento incial</div>
                       <v-divider></v-divider>
                       <div>
-                        <b>150,00</b>
+                        <b v-text="convertMoney(boxResume.openValue)"></b>
                       </div>
                     </v-alert>
                   </v-flex>
                   <v-flex xs12 sm6 md3>
                     <v-alert border="left" color="success" dark>
-                      <v-row align="center" no-gutters>
-                        <div>Usuario</div>
-                        <v-divider></v-divider>
-                        <div>
-                          <b>Jhonatan Borges</b>
-                        </div>
-                      </v-row>
+                      <div>Usúario</div>
+                      <v-divider></v-divider>
+                      <div small v-text="boxResume.user" dark></div>
                     </v-alert>
                   </v-flex>
                 </v-layout>
@@ -128,104 +150,141 @@
 </template>
 
 <script>
-import Menu from '../components/Menu';
-import vars from '../plugins/env.local'
-const url = `${vars.host}boxController.php`
+import Menu from "../components/Menu";
+import vars from "../plugins/env.local";
+const url = `${vars.host}boxController.php`;
 export default {
   components: {
-    Menu,
+    Menu
   },
   mounted: function () {
-    this.getBoxDay()
+    this.getBoxDay();
   },
   data: () => ({
-    search: '',
+    search: "",
     detailsBox: false,
-    date: new Date().toISOString().substr(0, 10),
+    date: new Date(),
     menu: false,
     modal: false,
     menu2: false,
     boxId: 20,
     BoxList: [],
     headers: [
-      { text: 'ID', value: 'boxId' },
+      { text: "ID", value: "boxId" },
       {
-        text: 'Data',
-        align: 'left',
+        text: "Data",
+        align: "left",
         sortable: true,
-        value: 'openDate',
+        value: "openDate"
       },
-      { text: 'Usuário', value: 'userInfo[0].name' },
-      { text: 'Status', value: 'status' },
-      { text: 'Ações', value: 'acao', sortable: false },
-
+      { text: "Usuário", value: "userInfo[0].name" },
+      { text: "Status", value: "status" },
+      { text: "Ações", value: "acao", sortable: false }
     ],
-    BoxList: [],
+    boxResume: {
+      id: "",
+      dateOpen: "",
+      user: "",
+      status: "",
+      openvalue: '',
+      valueTotal: '',
+      inputs: '',
+      outputs: '',
+    }
   }),
   methods: {
     convertDate(date) {
-      var parts = date.split(' ')[0].split('-')
+      var parts = date.split(" ")[0].split("-");
       var mydate = new Date(parts[0], parts[1] - 1, parts[2]);
-      return mydate.toLocaleDateString()
+      return mydate.toLocaleDateString();
+    },
+    convertMoney(money) {
+      const toCurrency = (n, curr, LanguageFormat = undefined) =>
+        Intl.NumberFormat(LanguageFormat, { style: 'currency', currency: curr }).format(n);
+      return (toCurrency(money, 'BRL'))
     },
     clientNameUpper(name) {
-      let clientName = name.split(' ').map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' ')
-      return clientName
+      let clientName = name
+        .split(" ")
+        .map(w => w[0].toUpperCase() + w.substr(1).toLowerCase())
+        .join(" ");
+      return clientName;
     },
     getBoxDay(date = this.date) {
-      let form = new FormData()
-      form.append('get-box-day', 'true')
-      form.append('date', this.date)
+      var local = new Date(date);
+      local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
+      let dateMysql = local.toJSON().slice(0, 10);
+      console.log(dateMysql);
+      let form = new FormData();
+      form.append("get-box-day", "true");
+      form.append("date", dateMysql);
       fetch(url, {
         method: "POST",
         body: form
-      }).then(resp => {
-        return resp.json()
-      }).then(json => {
-        // let json = JSON.parse(obj)
-        console.log(json[0].openDate.split(' ')[0])
-        this.BoxList = json
-        // alert(json.msg)
-        // document.getElementById('resp').innerHTML = json
       })
+        .then(resp => {
+          return resp.json();
+        })
+        .then(json => {
+          // let json = JSON.parse(obj)
+          console.log(json);
+          this.BoxList = json;
+          // alert(json.msg)
+          // document.getElementById('resp').innerHTML = json
+        });
     },
     day(dialog) {
-      console.log(this.date)
-      this.getBoxDay(this.date)
-      this.modal = false
-      dialog.save(this.date)
+      // console.log(this.date)
+      this.getBoxDay(this.date);
+      this.modal = false;
+      dialog.save(this.date);
     },
     getColor(status) {
-      if (status == "ABERTO") return 'primary'
-      else if (status == "FECHADO") return 'orange'
-      else if (status == "VENCIDA") return 'red'
-      else if (status == "RECEBIDA") return 'primary'
-      else if (status == "PENDENTE") return 'amber'
-      else if (status == "COBRADO") return 'purple darken-3'
-      else if (status == "CANCELADO") return 'red'
-      else return 'green'
+      if (status == "ABERTO") return "primary";
+      else if (status == "FECHADO") return "orange";
+      else if (status == "VENCIDA") return "red";
+      else if (status == "RECEBIDA") return "primary";
+      else if (status == "PENDENTE") return "amber";
+      else if (status == "COBRADO") return "purple darken-3";
+      else if (status == "CANCELADO") return "red";
+      else return "green";
     },
     viewBox(item) {
-      console.log(item);
-      this.detailsBox = true
-      let formData = new FormData()
-      formData.append('box-details', 'true')
-      formData.append('box-id', item.boxId)
+      this.detailsBox = true;
+      let formData = new FormData();
+      formData.append("box-details", "true");
+      formData.append("box-id", item.boxId);
       fetch(url, {
-        method: 'POST',
+        method: "POST",
         body: formData
-      }).then(resp => {
-        return resp.json()
-      }).then(json => {
-        this.boxDetails = json
-        // document.getElementById('resp').innerHTML = json
-        console.log(json)
-        this.receivedsBox = json.installments
       })
-    },
+        .then(resp => {
+          return resp.json();
+        })
+        .then(json => {
+          console.log(json);
+
+          this.boxResume.valueTotal = json.valueTotal
+          this.boxResume.inputs = json.inputs
+          this.boxResume.outputs = json.outputs
+
+          let resumeBox = [];
+          json.boxInfo.forEach(resumeBox => {
+            this.boxResume.id = resumeBox.boxId;
+            this.boxResume.status = resumeBox.status;
+            this.boxResume.openValue = resumeBox.openValue;
+          });
+          this.boxResume.user = json.boxInfo[0].userInfo[0].name
+            .split(" ")
+            .map(w => w[0].toUpperCase() + w.substr(1).toLowerCase())
+            .join(" ");
+
+
+
+        });
+    }
   }
-}
+};
 </script>
 
-<style>
-</style>
+<style></style>

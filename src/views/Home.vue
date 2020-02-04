@@ -7,11 +7,11 @@
         <v-layout class="col-sm-12 d-flex justify-space-between">
           <v-flex xs12 sm6 md3 class="mr-3">
             <v-alert icon="mdi-firework" border="left" color="blue lighten-1" dark outlined>
-              <div>Recebidas</div>
+              <div>{{resumeDay.qtdrecebida}} Recebidas</div>
               <v-divider dark></v-divider>
               <div>
                 <div class="title">
-                  <b>R$ 3015,00</b>
+                  <b>{{resumeDay.recebida}}</b>
                 </div>
               </div>
             </v-alert>
@@ -19,36 +19,36 @@
           <v-flex xs12 sm6 md3 class="mr-3">
             <v-alert icon="mdi-firework" border="left" color="blue lighten-1" dark outlined>
               <div>
-                Vencidas
+                {{resumeDay.qtdvencida}} Vencidas
                 <b></b>
               </div>
               <v-divider></v-divider>
               <div class="title">
-                <b>R$ 240,00</b>
+                <b>{{resumeDay.vencida}}</b>
               </div>
             </v-alert>
           </v-flex>
           <v-flex xs12 sm6 md3 class="mr-3">
             <v-alert icon="mdi-firework" border="left" color="blue lighten-1" dark outlined>
               <div>
-                Plano
+                {{resumeDay.qtdcobrada}} Cobradas
                 <b></b>
               </div>
               <v-divider></v-divider>
               <div class="title">
-                <b>R$ 240,00</b>
+                <b>{{resumeDay.cobrada}}</b>
               </div>
             </v-alert>
           </v-flex>
           <v-flex xs12 sm6 md3>
             <v-alert icon="mdi-firework" border="left" color="blue lighten-1" dark outlined>
               <div>
-                Plano
+                {{resumeDay.qtdpendente}} Pendentes
                 <b></b>
               </div>
               <v-divider></v-divider>
               <div class="title">
-                <b>R$ 240,00</b>
+                <b>{{resumeDay.pendente}}</b>
               </div>
             </v-alert>
           </v-flex>
@@ -57,7 +57,6 @@
           <div>
             <v-card outlined flat class="col-sm-12">
               <v-card-title color="red">
-                <v-spacer></v-spacer>
                 <div class="d-flex justify-space-between">
                   <v-menu
                     ref="menu"
@@ -71,7 +70,7 @@
                     <template v-slot:activator="{ on }">
                       <v-text-field
                         class="mr-5"
-                        v-model="date"
+                        v-model="dateConverted"
                         label="Data"
                         outlined
                         dense
@@ -81,12 +80,42 @@
                     <v-date-picker locale="pt-br" v-model="date" no-title scrollable>
                       <v-spacer></v-spacer>
                       <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-                      <v-btn text color="primary" @click="$refs.menu.save(date)">OK</v-btn>
+                      <v-btn
+                        text
+                        color="primary"
+                        @click="$refs.menu.save(date), dateFinal = date"
+                      >OK</v-btn>
                     </v-date-picker>
                   </v-menu>
-                  <p v-text="convertDate(date)">{{}}</p>
-                  <v-btn class="mr-5" color="blue lighten-1" dense dark>Buscar</v-btn>
 
+                  <v-menu
+                    ref="menuFinal"
+                    v-model="menuFinal"
+                    :close-on-content-click="false"
+                    :return-value.sync="dateFinal"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on }">
+                      <v-text-field
+                        class="mr-5"
+                        v-model="dateConvertedFinal"
+                        label="Data"
+                        outlined
+                        dense
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker locale="pt-br" v-model="dateFinal" no-title scrollable>
+                      <v-spacer></v-spacer>
+                      <v-btn text color="primary" @click="menuFinal = false">Cancel</v-btn>
+                      <v-btn text color="primary" @click="$refs.menuFinal.save(dateFinal)">OK</v-btn>
+                    </v-date-picker>
+                  </v-menu>
+
+                  <v-btn class="mr-5" dark color="primary" @click="installmentsAll()">Buscar</v-btn>
+                  <v-spacer></v-spacer>
                   <v-text-field
                     outlined
                     v-model="search"
@@ -243,12 +272,13 @@ export default {
     this.unsuccessful();
     this.installmentsAll();
     this.listAllPlans();
-    this.verifyLogin()
+    this.verifyLogin();
   },
   data: () => ({
     date: new Date().toISOString().substr(0, 10),
-    dateFormatted: '',
+    dateFinal: new Date().toISOString().substr(0, 10),
     menu: false,
+    menuFinal: false,
     modal: false,
     menu2: false,
     msg: "",
@@ -271,7 +301,7 @@ export default {
     isLoading: false,
     items: [],
     idClient: "",
-    search: '',
+    search: "",
     tab: null,
     parcel: [],
     interval: {},
@@ -290,14 +320,29 @@ export default {
       { text: "Cliente", value: "client.name" },
       { text: "Vencimento", value: "date" },
       { text: "Status", value: "status" }
-    ]
+    ],
+    resumeDay: {
+      recebida: 0,
+      pendente: 0,
+      vencida: 0,
+      cobrada: 0,
+      qtdrecebida: 0,
+      qtdpendente: 0,
+      qtdvencida: 0,
+      qtdcobrada: 0
+    }
   }),
   computed: {
-    convertDate(date) {
-      var parts = date.split(" ")[0].split("-");
+    dateConverted: function () {
+      var parts = this.date.split(" ")[0].split("-");
       var mydate = new Date(parts[0], parts[1] - 1, parts[2]);
       return mydate.toLocaleDateString();
     },
+    dateConvertedFinal: function () {
+      var parts = this.dateFinal.split(" ")[0].split("-");
+      var mydateFinal = new Date(parts[0], parts[1] - 1, parts[2]);
+      return mydateFinal.toLocaleDateString();
+    }
   },
   methods: {
     convertDate(date) {
@@ -306,8 +351,11 @@ export default {
       return mydate.toLocaleDateString();
     },
     clientNameUpper(name) {
-      let clientName = name.split(' ').map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' ')
-      return clientName
+      let clientName = name
+        .split(" ")
+        .map(w => w[0].toUpperCase() + w.substr(1).toLowerCase())
+        .join(" ");
+      return clientName;
     },
     unsuccessful() {
       const url = `${vars.host}parcelController.php`;
@@ -316,19 +364,28 @@ export default {
       fetch(url, {
         method: "POST",
         body: formData
-      })
-        .then(resp => {
-          return resp.json();
-        })
-        .then(json => {
-          // console.log(json)
-        });
+      }).then(resp => {
+        return resp.json();
+      });
+    },
+    clear() {
+      this.resumeDay.qtdvencida = 0;
+      this.resumeDay.vencida = 0;
+      this.resumeDay.qtdpendente = 0;
+      this.resumeDay.pendente = 0;
+      this.resumeDay.qtdcobrada = 0;
+      this.resumeDay.cobrada = 0;
+      this.resumeDay.qtdrecebida = 0;
+      this.resumeDay.recebida = 0;
     },
     installmentsAll() {
+      this.clear(); // zera as variaves para incrementar os novos valores
       this.isLoading = true;
       const url = `${vars.host}parcelController.php`;
       let formData = new FormData();
       formData.append("filter", "true");
+      formData.append("date-initial", this.date);
+      formData.append("date-final", this.dateFinal);
       fetch(url, {
         method: "POST",
         body: formData
@@ -338,39 +395,29 @@ export default {
         })
         .then(json => {
           console.log(json);
-
           this.listParcel = json;
-          this.installmentsTotal = json.length;
-          let totalVencida = 0;
-          let totalPendente = 0;
-          let totalCobrada = 0;
-          let totalRecebida = 0;
           json.forEach(item => {
-            // console.log(item)
             switch (item.status) {
               case "VENCIDA":
-                totalVencida += parseFloat(item.value);
-                this.quantityDefeat = totalVencida;
+                this.resumeDay.qtdvencida++;
+                this.resumeDay.vencida += parseFloat(item.value);
                 break;
               case "PENDENTE":
-                totalPendente += parseFloat(item.value);
-                this.quantityPending = totalPendente;
+                this.resumeDay.qtdpendente++;
+                this.resumeDay.pendente += parseFloat(item.value);
                 break;
               case "COBRADO":
-                totalCobrada += parseFloat(item.value);
+                this.resumeDay.qtdcobrada++;
+                this.resumeDay.cobrada += parseFloat(item.value);
                 break;
               case "RECEBIDA":
-                totalRecebida += parseFloat(item.value);
-                this.quantityReceive = totalRecebida;
+                this.resumeDay.qtdrecebida++;
+                this.resumeDay.recebida += parseFloat(item.value);
                 break;
               default:
                 break;
             }
           });
-          // console.log(`Total vencidas: ${totalVencida}`)
-          // console.log(`Total pendetes: ${totalPendente}`)
-          // console.log(`Total cobradas: ${totalCobrada}`)
-          // console.log(`Total recebidas: ${totalRecebida}`)
         });
     },
 
@@ -405,7 +452,6 @@ export default {
         })
         .then(json => {
           this.plans = json;
-          console.log(this.plans);
         });
     },
     getInstallments() {
@@ -474,11 +520,10 @@ export default {
         number++;
       }
       this.planSelect.installments = obj;
-      // console.log(this.planSelect);
       this.confirm();
     },
     confirm() {
-      this.loading = true
+      this.loading = true;
       const url = `${vars.host}contractController.php`;
       let form = new FormData();
       form.append("confirm", "true");
@@ -495,19 +540,16 @@ export default {
           return resp.json();
         })
         .then(json => {
-          this.msg = json.msg
-          console.log(json.msg);
+          this.msg = json.msg;
           // document.getElementById("respp").innerHTML = json
           if (json.msg.indexOf("Sucesso") > 0) {
             this.succesAlert = true;
             // alert(json.msg)
             // this.$router.push('home')
-            this.loading = false
+            this.loading = false;
           } else {
-
-            this.errorAlert = true
+            this.errorAlert = true;
           }
-
         });
     },
     onChange(event) {
@@ -515,19 +557,17 @@ export default {
         if (p.id == event) {
           this.p11 = p.p11;
           this.p24 = p.p24;
-          console.log(p.p11, p.p24);
         }
       });
     },
     verifyLogin() {
-      if (!localStorage.getItem('user-id') && !localStorage.getItem('user-name')) {
-        this.$router.push('/')
+      if (
+        !localStorage.getItem("user-id") &&
+        !localStorage.getItem("user-name")
+      ) {
+        this.$router.push("/");
       }
-    },
-
-  },
-  computed: {
-
+    }
   },
   watch: {
     model(val) {
@@ -535,9 +575,9 @@ export default {
       else this.tab = null;
     },
     loading(val) {
-      if (!val) return
+      if (!val) return;
 
-      setTimeout(() => (this.loading = false), 3000)
+      setTimeout(() => (this.loading = false), 3000);
     },
 
     search(val) {
@@ -558,7 +598,6 @@ export default {
           json.forEach(item => {
             this.items.push(item);
           });
-          // console.log(this.items)
         })
         .finally(() => (this.isLoading = false));
     }

@@ -42,11 +42,86 @@
               <div small v-text="clientNameUpper(item.userInfo[0].name)" dark></div>
             </template>
             <template v-slot:item.acao="{ item }">
-              <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
-              <v-icon small>mdi-trash-can</v-icon>
+              <v-icon small class="mr-2" @click="viewBox(item)">mdi-eye</v-icon>
             </template>
           </v-data-table>
         </v-card>
+        <v-row justify="center">
+          <v-dialog
+            v-model="detailsBox"
+            fullscreen
+            hide-overlay
+            transition="dialog-bottom-transition"
+          >
+            <v-card>
+              <v-toolbar dense flat dark color="primary">
+                <v-btn icon dark @click="detailsBox = false">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+                <v-toolbar-title>Caixa 01210</v-toolbar-title>
+                <v-spacer></v-spacer>
+              </v-toolbar>
+
+              <v-divider></v-divider>
+              <div class="col-sm-12">
+                <v-layout class="d-flex justify-space-between">
+                  <v-flex xs12 sm6 md3 class="mr-3">
+                    <v-alert icon="mdi-firework" border="left" color="indigo" dark>
+                      <div>
+                        Plano
+                        <b></b>
+                      </div>
+                      <v-divider></v-divider>
+                      <div>
+                        em
+                        <b></b> vezes
+                      </div>
+                    </v-alert>
+                  </v-flex>
+                  <v-flex xs12 sm6 md3 class="mr-3">
+                    <v-alert icon="mdi-firework" border="left" color="indigo" dark>
+                      <div>Entradas</div>
+                      <v-divider></v-divider>
+                      <div>
+                        <b>R$ 500,00</b>
+                      </div>
+                    </v-alert>
+                  </v-flex>
+
+                  <v-flex xs12 sm6 md3 class="mr-3">
+                    <v-alert icon="mdi-clipboard-alert-outline" border="left" color="indigo" dark>
+                      <div>Saídas</div>
+                      <v-divider></v-divider>
+                      <div>
+                        <b>R$ 50,00</b>
+                      </div>
+                    </v-alert>
+                  </v-flex>
+                  <v-flex xs12 sm6 md3 class="mr-3 pb-1">
+                    <v-alert icon="mdi-clipboard-check-outline" border="left" color="indigo" dark>
+                      <div>Suprimento incial</div>
+                      <v-divider></v-divider>
+                      <div>
+                        <b>150,00</b>
+                      </div>
+                    </v-alert>
+                  </v-flex>
+                  <v-flex xs12 sm6 md3>
+                    <v-alert border="left" color="success" dark>
+                      <v-row align="center" no-gutters>
+                        <div>Usuario</div>
+                        <v-divider></v-divider>
+                        <div>
+                          <b>Jhonatan Borges</b>
+                        </div>
+                      </v-row>
+                    </v-alert>
+                  </v-flex>
+                </v-layout>
+              </div>
+            </v-card>
+          </v-dialog>
+        </v-row>
       </v-container>
     </v-content>
   </div>
@@ -55,7 +130,7 @@
 <script>
 import Menu from '../components/Menu';
 import vars from '../plugins/env.local'
-
+const url = `${vars.host}boxController.php`
 export default {
   components: {
     Menu,
@@ -65,6 +140,7 @@ export default {
   },
   data: () => ({
     search: '',
+    detailsBox: false,
     date: new Date().toISOString().substr(0, 10),
     menu: false,
     modal: false,
@@ -84,6 +160,7 @@ export default {
       { text: 'Ações', value: 'acao', sortable: false },
 
     ],
+    BoxList: [],
   }),
   methods: {
     convertDate(date) {
@@ -96,7 +173,6 @@ export default {
       return clientName
     },
     getBoxDay(date = this.date) {
-      const url = `${vars.host}boxController.php`
       let form = new FormData()
       form.append('get-box-day', 'true')
       form.append('date', this.date)
@@ -128,6 +204,24 @@ export default {
       else if (status == "COBRADO") return 'purple darken-3'
       else if (status == "CANCELADO") return 'red'
       else return 'green'
+    },
+    viewBox(item) {
+      console.log(item);
+      this.detailsBox = true
+      let formData = new FormData()
+      formData.append('box-details', 'true')
+      formData.append('box-id', item.boxId)
+      fetch(url, {
+        method: 'POST',
+        body: formData
+      }).then(resp => {
+        return resp.json()
+      }).then(json => {
+        this.boxDetails = json
+        // document.getElementById('resp').innerHTML = json
+        console.log(json)
+        this.receivedsBox = json.installments
+      })
     },
   }
 }

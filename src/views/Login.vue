@@ -86,7 +86,6 @@ export default {
       }).then(resp => {
         return resp.json()
       }).then(json => {
-
         if (json.status === 'Ativo') {
           localStorage.setItem('user-name', json.name)
           localStorage.setItem('user-id', json.userId)
@@ -97,7 +96,6 @@ export default {
         } else {
           this.erroLogin = true
           this.msg = json.msg
-          console.log(json);
           this.loader = null
         }
       })

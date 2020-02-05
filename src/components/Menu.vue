@@ -67,7 +67,7 @@
       </v-btn>
       <v-btn icon large>
         <v-avatar size="32px" item>
-          <v-img src="https://cdn.vuetifyjs.com/images/logos/logo.svg" alt="Vuetify" />
+          <v-img src="../assets/logo.png" alt="Vedas Sistemas" />
         </v-avatar>
       </v-btn>
     </v-app-bar>
@@ -85,9 +85,9 @@ export default {
     dialog: false,
     drawer: true,
     items: [
-      { icon: 'mdi-contacts', text: 'Clientes', router: 'clients' },
-      { icon: 'mdi-history', text: 'Caixas', router: 'caixas' },
-      { icon: 'mdi-content-copy', text: 'Parcelas', router: 'relatorio' },
+      { icon: 'mdi-contacts', text: 'Clientes', },
+      { icon: 'mdi-history', text: 'Caixas', },
+      { icon: 'mdi-content-copy', text: 'Parcelas', },
       { icon: 'mdi-settings', text: 'Configurações', },
       { icon: 'mdi-help-circle', text: 'Ajuda' },
     ],

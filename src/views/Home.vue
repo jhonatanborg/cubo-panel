@@ -1,132 +1,169 @@
 <template>
-  <v-content white fluid>
+  <v-content fluid>
     <Menu />
     <div>
       <v-container flat class>
-        <v-divider class="pt-2"></v-divider>
-        <v-layout class="col-sm-12 d-flex justify-space-between">
-          <v-flex xs12 sm6 md3 class="mr-3">
-            <v-alert icon="mdi-firework" border="left" color="blue lighten-1" dark outlined>
-              <div>{{resumeDay.qtdrecebida}} Recebidas</div>
-              <v-divider dark></v-divider>
-              <div>
-                <div class="title">
-                  <b>{{resumeDay.recebida}}</b>
+        <v-card flat class="col-sm-12">
+          <v-layout>
+            <v-flex xs12 sm6 md3 class="mr-3">
+              <v-alert
+                icon="mdi-calendar-check"
+                prominent
+                border="left"
+                color="blue lighten-1"
+                dark
+                outlined
+              >
+                <div>{{resumeDay.qtdrecebida}} Recebidas</div>
+                <v-divider dark></v-divider>
+                <div>
+                  <div class="title">
+                    <b v-text="convertMoney(resumeDay.recebida)"></b>
+                  </div>
                 </div>
-              </div>
-            </v-alert>
-          </v-flex>
-          <v-flex xs12 sm6 md3 class="mr-3">
-            <v-alert icon="mdi-firework" border="left" color="blue lighten-1" dark outlined>
-              <div>
-                {{resumeDay.qtdvencida}} Vencidas
-                <b></b>
-              </div>
-              <v-divider></v-divider>
-              <div class="title">
-                <b>{{resumeDay.vencida}}</b>
-              </div>
-            </v-alert>
-          </v-flex>
-          <v-flex xs12 sm6 md3 class="mr-3">
-            <v-alert icon="mdi-firework" border="left" color="blue lighten-1" dark outlined>
-              <div>
-                {{resumeDay.qtdcobrada}} Cobradas
-                <b></b>
-              </div>
-              <v-divider></v-divider>
-              <div class="title">
-                <b>{{resumeDay.cobrada}}</b>
-              </div>
-            </v-alert>
-          </v-flex>
-          <v-flex xs12 sm6 md3>
-            <v-alert icon="mdi-firework" border="left" color="blue lighten-1" dark outlined>
-              <div>
-                {{resumeDay.qtdpendente}} Pendentes
-                <b></b>
-              </div>
-              <v-divider></v-divider>
-              <div class="title">
-                <b>{{resumeDay.pendente}}</b>
-              </div>
-            </v-alert>
-          </v-flex>
-        </v-layout>
+              </v-alert>
+            </v-flex>
+            <v-flex xs12 sm6 md3 class="mr-3">
+              <v-alert
+                icon="mdi-firework"
+                prominent
+                border="left"
+                color="blue lighten-1"
+                dark
+                outlined
+              >
+                <div>
+                  {{resumeDay.qtdvencida}} Vencidas
+                  <b></b>
+                </div>
+                <v-divider></v-divider>
+                <div class="title">
+                  <b v-text="convertMoney(resumeDay.vencida)"></b>
+                </div>
+              </v-alert>
+            </v-flex>
+            <v-flex xs12 sm6 md3 class="mr-3">
+              <v-alert
+                icon="mdi-calendar-remove"
+                prominent
+                border="left"
+                color="blue lighten-1"
+                dark
+                outlined
+              >
+                <div>
+                  {{resumeDay.qtdcobrada}} Cobradas
+                  <b></b>
+                </div>
+                <v-divider></v-divider>
+                <div class="title">
+                  <b v-text="convertMoney(resumeDay.cobrada)"></b>
+                </div>
+              </v-alert>
+            </v-flex>
+            <v-flex xs12 sm6 md3>
+              <v-alert
+                icon="mdi-calendar-multiple"
+                border="left"
+                outlined
+                prominent
+                color="blue lighten-1"
+                dark
+              >
+                <div>
+                  {{resumeDay.qtdpendente}} Pendentes
+                  <b></b>
+                </div>
+                <v-divider></v-divider>
+                <div class="title">
+                  <b v-text="convertMoney(resumeDay.pendente)"></b>
+                </div>
+              </v-alert>
+            </v-flex>
+          </v-layout>
+          <div class="d-flex justify-end" flat>
+            <v-btn @click="newloan = true" color="blue lighten-1" dark>Novo contrato</v-btn>
+          </div>
+        </v-card>
+        <div class="col-sm-12">
+          <v-divider color-border="primary"></v-divider>
+        </div>
         <div fluid>
           <div>
-            <v-card outlined flat class="col-sm-12">
-              <v-card-title color="red">
-                <div class="d-flex justify-space-between">
-                  <v-menu
-                    ref="menu"
-                    v-model="menu"
-                    :close-on-content-click="false"
-                    :return-value.sync="date"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="290px"
-                  >
-                    <template v-slot:activator="{ on }">
-                      <v-text-field
-                        class="mr-5"
-                        v-model="dateConverted"
-                        label="Data"
-                        outlined
-                        dense
-                        v-on="on"
-                      ></v-text-field>
-                    </template>
-                    <v-date-picker locale="pt-br" v-model="date" no-title scrollable>
-                      <v-spacer></v-spacer>
-                      <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-                      <v-btn
-                        text
-                        color="primary"
-                        @click="$refs.menu.save(date), dateFinal = date"
-                      >OK</v-btn>
-                    </v-date-picker>
-                  </v-menu>
+            <v-card flat class="col-sm-12">
+              <v-card-title dense class="pa-1 v-card-title" color="red">
+                <div class="col-sm-12 d-flex justify-space-between">
+                  <div class="col-sm-6 d-flex justify-space-between">
+                    <v-menu
+                      ref="menu"
+                      v-model="menu"
+                      :close-on-content-click="false"
+                      :return-value.sync="date"
+                      transition="scale-transition"
+                      offset-y
+                      min-width="290px"
+                    >
+                      <template v-slot:activator="{ on }">
+                        <v-text-field
+                          class="mr-5"
+                          v-model="dateConverted"
+                          label="Data inicial"
+                          outlined
+                          dense
+                          v-on="on"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker locale="pt-br" v-model="date" no-title scrollable>
+                        <v-spacer></v-spacer>
+                        <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+                        <v-btn
+                          text
+                          color="primary"
+                          @click="$refs.menu.save(date), dateFinal = date"
+                        >OK</v-btn>
+                      </v-date-picker>
+                    </v-menu>
 
-                  <v-menu
-                    ref="menuFinal"
-                    v-model="menuFinal"
-                    :close-on-content-click="false"
-                    :return-value.sync="dateFinal"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="290px"
-                  >
-                    <template v-slot:activator="{ on }">
-                      <v-text-field
-                        class="mr-5"
-                        v-model="dateConvertedFinal"
-                        label="Data"
-                        outlined
-                        dense
-                        v-on="on"
-                      ></v-text-field>
-                    </template>
-                    <v-date-picker locale="pt-br" v-model="dateFinal" no-title scrollable>
-                      <v-spacer></v-spacer>
-                      <v-btn text color="primary" @click="menuFinal = false">Cancel</v-btn>
-                      <v-btn text color="primary" @click="$refs.menuFinal.save(dateFinal)">OK</v-btn>
-                    </v-date-picker>
-                  </v-menu>
-
-                  <v-btn class="mr-5" dark color="primary" @click="installmentsAll()">Buscar</v-btn>
-                  <v-spacer></v-spacer>
-                  <v-text-field
-                    outlined
-                    v-model="search"
-                    append-icon="mdi-magnify"
-                    label="Buscar"
-                    single-line
-                    hide-details
-                    dense
-                    class="mr-2"
-                  ></v-text-field>
-                  <v-btn @click="newloan = true" color="blue lighten-1" dark>Novo emprestimo</v-btn>
+                    <v-menu
+                      ref="menuFinal"
+                      v-model="menuFinal"
+                      :close-on-content-click="false"
+                      :return-value.sync="dateFinal"
+                      transition="scale-transition"
+                      offset-y
+                      min-width="290px"
+                    >
+                      <template v-slot:activator="{ on }">
+                        <v-text-field
+                          class="mr-5"
+                          v-model="dateConvertedFinal"
+                          label="Data final"
+                          outlined
+                          dense
+                          flat
+                          v-on="on"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker locale="pt-br" v-model="dateFinal" no-title scrollable>
+                        <v-spacer></v-spacer>
+                        <v-btn text color="primary" @click="menuFinal = false">Cancel</v-btn>
+                        <v-btn text color="primary" @click="$refs.menuFinal.save(dateFinal)">OK</v-btn>
+                      </v-date-picker>
+                    </v-menu>
+                    <v-btn class="mr-5" dark color="primary" @click="installmentsAll()">Buscar</v-btn>
+                  </div>
+                  <div class="col-sm-4">
+                    <v-text-field
+                      outlined
+                      v-model="search"
+                      append-icon="mdi-magnify"
+                      label="Buscar"
+                      single-line
+                      hide-details
+                      dense
+                      class="mr-2"
+                    ></v-text-field>
+                  </div>
                 </div>
               </v-card-title>
               <v-data-table
@@ -172,7 +209,6 @@
           <div class="col-sm-12">
             <v-alert v-show="succesAlert" dense text type="info" dismissible>{{msg}}</v-alert>
             <v-alert v-show="errorAlert" dense text type="error" dismissible>{{msg}}</v-alert>
-
             <v-card flat class="pa-4">
               <v-autocomplete
                 class="mb-5"
@@ -345,6 +381,12 @@ export default {
     }
   },
   methods: {
+    convertMoney(money) {
+      const toCurrency = (n, curr, LanguageFormat = undefined) =>
+        Intl.NumberFormat(LanguageFormat, { style: 'currency', currency: curr }).format(n);
+      return (toCurrency(money, 'BRL'))
+
+    },
     convertDate(date) {
       var parts = date.split(" ")[0].split("-");
       var mydate = new Date(parts[0], parts[1] - 1, parts[2]);
@@ -605,4 +647,11 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.input-style {
+  width: 150px;
+}
+.v-card-title {
+  height: 80px;
+}
+</style>

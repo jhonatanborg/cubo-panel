@@ -498,7 +498,6 @@ export default {
               break;
           }
           element.installments.forEach(item => {
-
             switch (item.status) {
               case 'VENCIDA':
                 qtdVencida++

@@ -3,6 +3,57 @@
     <Menu />
 
     <v-content>
+      <v-card flat class="col-sm-12">
+        <v-layout>
+          <v-flex xs12 sm6 md3 class="mr-3">
+            <v-alert icon="mdi-calendar-check" prominent border="left" color="cyan" dark outlined>
+              <div>
+                Ativos
+                <v-divider></v-divider>
+                <b class="title">11111</b>
+              </div>
+            </v-alert>
+          </v-flex>
+          <v-flex xs12 sm6 md3 class="mr-3">
+            <v-alert icon="mdi-firework" prominent border="left" color="cyan" dark outlined>
+              <div>
+                Inativos
+                <v-divider></v-divider>
+                <b class="title">11111</b>
+              </div>
+            </v-alert>
+          </v-flex>
+          <v-flex xs12 sm6 md3 class="mr-3">
+            <v-alert icon="mdi-calendar-remove" prominent border="left" color="cyan" dark outlined>
+              <div>
+                Fisicos
+                <v-divider></v-divider>
+                <b class="title">11111</b>
+              </div>
+            </v-alert>
+          </v-flex>
+          <v-flex xs12 sm6 md3>
+            <v-alert
+              icon="mdi-calendar-multiple"
+              border="left"
+              outlined
+              prominent
+              color="cyan"
+              dark
+            >
+              <div>
+                Juridicos
+                <v-divider></v-divider>
+                <b class="title">111111</b>
+              </div>
+            </v-alert>
+          </v-flex>
+        </v-layout>
+        <div class="d-flex justify-end" flat>
+          <v-btn @click.stop="dialog = true" color="primary">Novo cliente</v-btn>
+        </div>
+      </v-card>
+
       <v-container class="col-sm-12">
         <v-card class flat outlined>
           <v-card-title color="red">
@@ -142,7 +193,7 @@
                 </v-layout>
                 <v-card outlined flat class="col-sm-12">
                   <v-card-title color="red">
-                    Clientes
+                    caIXAS
                     <v-spacer></v-spacer>
                     <div class="d-flex justify-space-between">
                       <v-text-field

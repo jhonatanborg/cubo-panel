@@ -2,313 +2,389 @@
   <div>
     <Menu />
     <v-content white fluid>
-      <div>
-        <v-layout class="col-sm-12 d-flex justify-space-between">
-          <v-flex xs12 sm6 md3>
-            <v-card class="pa-4 mr-2" outlined>
-              <div class="overline mb-2">Contrato</div>
-              <div class="title blue--text text-capitalize">1314414</div>
-            </v-card>
-          </v-flex>
-          <v-flex xs12 sm6 md3>
-            <v-card class="pa-4 mr-2" outlined>
-              <div class="overline mb-2">Contrato</div>
-              <div class="title blue--text text-capitalize">1314414</div>
-            </v-card>
-          </v-flex>
-          <v-flex xs12 sm6 md3>
-            <v-card class="pa-4 mr-2" outlined>
-              <div class="overline mb-2">Contrato</div>
-              <div class="title blue--text text-capitalize">1314414</div>
-            </v-card>
-          </v-flex>
-          <v-flex xs12 sm6 md3>
-            <v-card class="pa-4" outlined>
-              <div class="overline mb-2">Contrato</div>
-              <div class="title blue--text text-capitalize">1314414</div>
-            </v-card>
-          </v-flex>
-        </v-layout>
-
+      <div class="col-sm-12">
+        <v-card flat class="col-sm-12">
+          <div class="d-flex justify-end" flat>
+            <v-btn @click="newloan = true" color="blue lighten-1" dark>Novo contrato</v-btn>
+          </div>
+        </v-card>
         <div class="col-sm-12">
-          <v-card class flat outlined>
-            <v-card-title color="red">
-              Contratos
+          <v-divider></v-divider>
+        </div>
+        <v-card c class="col-sm-12" flat>
+          <v-card-title color="red">
+            <div class="d-flex justify-space-between">
+              <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Buscar"
+                single-line
+                hide-details
+                outlined
+                dense
+                class="mr-2"
+              ></v-text-field>
               <v-spacer></v-spacer>
-              <div class="d-flex justify-space-between">
-                <v-text-field
-                  v-model="search"
-                  append-icon="mdi-magnify"
-                  label="Buscar cliente"
-                  single-line
-                  hide-details
-                  solo
-                  dense
-                  class="mr-2"
-                ></v-text-field>
-                <v-spacer></v-spacer>
-              </div>
-            </v-card-title>
-            <v-data-table
-              locale="pt"
-              :headers="headers"
-              :items="listContracts"
-              :items-per-page="5"
-              :search="search"
-              class="elevation-0"
-            >
-              <template v-slot:item.status="{ item }">
-                <v-chip small :color="getColor(item.status)" dark>{{ item.status}}</v-chip>
-              </template>
-              <template v-slot:item.client.name="{ item }">
-                <div small v-text="clientNameUpper(item.client.name)" dark></div>
-              </template>
-
-              <template v-slot:item.action="{ item }">
-                <v-icon small class="mr-2" @click="viewContract(item)">mdi-eye</v-icon>
-                <v-icon small @click="deleteItem(item)">mdi-delete-circle-outline</v-icon>
-              </template>
-            </v-data-table>
-          </v-card>
-          <v-dialog
-            v-model="contractView"
-            fullscreen
-            max-width="600px"
-            transition="dialog-bottom-transition"
+            </div>
+          </v-card-title>
+          <v-data-table
+            locale="pt"
+            :headers="headers"
+            :items="listContracts"
+            :items-per-page="5"
+            :search="search"
+            class="elevation-0"
           >
-            <v-card>
-              <v-toolbar dense flat dark color="primary">
-                <v-toolbar-title>Detalhes</v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-btn @click="close()" icon dark>
-                  <v-icon>mdi-close</v-icon>
-                </v-btn>
-              </v-toolbar>
-              <div class="container pa-3">
-                <div>
-                  <div class="mt-5 pb-5">
-                    <div class="d-flex justify-space-between">
-                      <div>{{parcelDetails.clientName}}</div>
-                      <v-spacer></v-spacer>
-                      <div>Ultima atualização - 24/30/2019 00:30</div>
-                    </div>
-                    <v-divider dense></v-divider>
+            <template v-slot:item.status="{ item }">
+              <v-chip small :color="getColor(item.status)" dark>{{ item.status}}</v-chip>
+            </template>
+            <template v-slot:item.client.name="{ item }">
+              <div small v-text="clientNameUpper(item.client.name)" dark></div>
+            </template>
+
+            <template v-slot:item.action="{ item }">
+              <v-icon small class="mr-2" @click="viewContract(item)">mdi-eye</v-icon>
+            </template>
+          </v-data-table>
+        </v-card>
+        <v-dialog
+          v-model="contractView"
+          fullscreen
+          max-width="600px"
+          transition="dialog-bottom-transition"
+        >
+          <v-card>
+            <v-toolbar dense flat dark color="primary">
+              <v-toolbar-title>Detalhes</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn @click="close()" icon dark>
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-toolbar>
+            <div class="container pa-3">
+              <div>
+                <div class="mt-5 pb-5">
+                  <div class="d-flex justify-space-between">
+                    <div>{{parcelDetails.clientName}}</div>
+                    <v-spacer></v-spacer>
+                    <div>Ultima atualização - 24/30/2019 00:30</div>
                   </div>
-                  <v-layout class="d-flex justify-space-between">
-                    <v-flex xs12 sm6 md3 class="mr-3">
-                      <v-alert icon="mdi-firework" border="left" color="indigo" dark>
-                        <div>
-                          Plano
-                          <b v-text="convertMoney(parcelDetails.planValue)"></b>
-                        </div>
-                        <v-divider></v-divider>
-                        <div>
-                          em
-                          <b>{{parcelDetails.qtdParcel}}</b> vezes
-                        </div>
-                      </v-alert>
-                    </v-flex>
-                    <v-flex xs12 sm6 md3 class="mr-3">
-                      <v-alert icon="mdi-firework" border="left" color="indigo" dark>
-                        <div>{{parcelDetails.qtdPending}} pendentes</div>
-                        <v-divider></v-divider>
-                        <div>
-                          <b v-text="convertMoney(parcelDetails.pending)"></b>
-                        </div>
-                      </v-alert>
-                    </v-flex>
+                  <v-divider dense></v-divider>
+                </div>
+                <v-layout class="d-flex justify-space-between">
+                  <v-flex xs12 sm6 md3 class="mr-3">
+                    <v-alert icon="mdi-firework" border="left" color="indigo" dark>
+                      <div>
+                        Plano
+                        <b v-text="convertMoney(parcelDetails.planValue)"></b>
+                      </div>
+                      <v-divider></v-divider>
+                      <div>
+                        em
+                        <b>{{parcelDetails.qtdParcel}}</b> vezes
+                      </div>
+                    </v-alert>
+                  </v-flex>
+                  <v-flex xs12 sm6 md3 class="mr-3">
+                    <v-alert icon="mdi-firework" border="left" color="indigo" dark>
+                      <div>{{parcelDetails.qtdPending}} pendentes</div>
+                      <v-divider></v-divider>
+                      <div>
+                        <b v-text="convertMoney(parcelDetails.pending)"></b>
+                      </div>
+                    </v-alert>
+                  </v-flex>
 
-                    <v-flex xs12 sm6 md3 class="mr-3">
-                      <v-alert icon="mdi-clipboard-alert-outline" border="left" color="indigo" dark>
-                        <div>{{parcelDetails.qtdUnsuccessful}} Vencidas</div>
-                        <v-divider></v-divider>
+                  <v-flex xs12 sm6 md3 class="mr-3">
+                    <v-alert icon="mdi-clipboard-alert-outline" border="left" color="indigo" dark>
+                      <div>{{parcelDetails.qtdUnsuccessful}} Vencidas</div>
+                      <v-divider></v-divider>
+                      <div>
+                        <b v-text="convertMoney(parcelDetails.unsuccessful)"></b>
+                      </div>
+                    </v-alert>
+                  </v-flex>
+                  <v-flex xs12 sm6 md3 class="mr-3 pb-1">
+                    <v-alert icon="mdi-clipboard-check-outline" border="left" color="indigo" dark>
+                      <div>{{parcelDetails.qtdReceive}} Recebidas</div>
+                      <v-divider></v-divider>
+                      <div>
+                        <b v-text="convertMoney(parcelDetails.receive)"></b>
+                      </div>
+                    </v-alert>
+                  </v-flex>
+                  <v-flex xs12 sm6 md3>
+                    <v-alert border="left" color="success" dark>
+                      <v-row align="center" no-gutters>
                         <div>
-                          <b v-text="convertMoney(parcelDetails.unsuccessful)"></b>
+                          <h5>Status:</h5>
+                          <b>{{parcelDetails.status}}</b>
                         </div>
-                      </v-alert>
-                    </v-flex>
-                    <v-flex xs12 sm6 md3 class="mr-3 pb-1">
-                      <v-alert icon="mdi-clipboard-check-outline" border="left" color="indigo" dark>
-                        <div>{{parcelDetails.qtdReceive}} Recebidas</div>
-                        <v-divider></v-divider>
-                        <div>
-                          <b v-text="convertMoney(parcelDetails.receive)"></b>
-                        </div>
-                      </v-alert>
-                    </v-flex>
-                    <v-flex xs12 sm6 md3>
-                      <v-alert border="left" color="success" dark>
-                        <v-row align="center" no-gutters>
-                          <div>
-                            <h5>Status:</h5>
-                            <b>{{parcelDetails.status}}</b>
-                          </div>
-                          <v-spacer></v-spacer>
-                          <v-btn x-small class="ma-2" outlined fab color="white">
-                            <v-icon>mdi-pencil</v-icon>
-                          </v-btn>
-                        </v-row>
-                      </v-alert>
-                    </v-flex>
-                  </v-layout>
-
-                  <div>
-                    <v-card outlined flat class="col-sm-12">
-                      <v-card-title color="red">
-                        Clientes
                         <v-spacer></v-spacer>
-                        <div class="d-flex justify-space-between">
-                          <v-text-field
-                            v-model="search"
-                            append-icon="mdi-magnify"
-                            label="Buscar"
-                            single-line
-                            hide-details
-                            solo
-                            dense
-                            class="mr-2"
-                          ></v-text-field>
-                        </div>
-                      </v-card-title>
-                      <v-data-table
-                        locale="pt"
-                        :headers="tableParcel"
-                        :items="parcelDetails.installments"
-                        :items-per-page="5"
-                        :search="search"
-                      >
-                        <template v-slot:item.status="{ item }">
-                          <v-chip small :color="getColor(item.status)" dark>{{ item.status}}</v-chip>
-                        </template>
-                        <template v-slot:item.date="{ item }">
-                          <div small v-text="convertDate(item.date)" dark></div>
-                        </template>
-                        <template v-slot:item.client.name="{ item }">
-                          <div small v-text="clientNameUpper(item.client.name)" dark></div>
-                        </template>
-                        <template v-slot:item.acao="{ item }">
-                          <v-btn
-                            @click="getInstallment(item.id)"
-                            x-small
-                            rounded
-                            outlined
-                            color="primary"
-                          >
-                            <v-icon left>mdi-eye</v-icon>Visualizar
-                          </v-btn>
-                        </template>
-                      </v-data-table>
-                    </v-card>
-                  </div>
+                        <v-btn x-small class="ma-2" outlined fab color="white">
+                          <v-icon>mdi-pencil</v-icon>
+                        </v-btn>
+                      </v-row>
+                    </v-alert>
+                  </v-flex>
+                </v-layout>
+
+                <div>
+                  <v-card flat class="col-sm-12">
+                    <v-card-title color="red">
+                      Parcelas do contrato
+                      <v-spacer></v-spacer>
+                      <div class="d-flex justify-space-between">
+                        <v-text-field
+                          v-model="search"
+                          append-icon="mdi-magnify"
+                          label="Buscar"
+                          single-line
+                          hide-details
+                          outlined
+                          dense
+                          class="mr-2"
+                        ></v-text-field>
+                      </div>
+                    </v-card-title>
+                    <v-data-table
+                      locale="pt"
+                      :headers="tableParcel"
+                      :items="parcelDetails.installments"
+                      :items-per-page="5"
+                      :search="search"
+                    >
+                      <template v-slot:item.status="{ item }">
+                        <v-chip small :color="getColor(item.status)" dark>{{ item.status}}</v-chip>
+                      </template>
+                      <template v-slot:item.date="{ item }">
+                        <div small v-text="convertDate(item.date)" dark></div>
+                      </template>
+                      <template v-slot:item.client.name="{ item }">
+                        <div small v-text="clientNameUpper(item.client.name)" dark></div>
+                      </template>
+                      <template v-slot:item.acao="{ item }">
+                        <v-btn
+                          @click="getInstallment(item.id)"
+                          x-small
+                          rounded
+                          outlined
+                          color="primary"
+                        >
+                          <v-icon left>mdi-eye</v-icon>Visualizar
+                        </v-btn>
+                      </template>
+                    </v-data-table>
+                  </v-card>
                 </div>
               </div>
+            </div>
 
-              <v-layout row justify-center>
-                <v-dialog v-model="innstallment" persistent max-width="700px">
-                  <v-card flat>
-                    <v-toolbar dense flat dark color="primary">
-                      <v-toolbar-title>Detalhes</v-toolbar-title>
-                      <v-spacer></v-spacer>
-                      <v-btn @click="innstallment = false" icon dark>
-                        <v-icon>mdi-close</v-icon>
-                      </v-btn>
-                    </v-toolbar>
-                    <div class="col-sm-12">
-                      <v-alert v-show="showAlert" dense text type="info" dismissible>{{msg}}</v-alert>
-                      <div class="pa-4 d-flex justify-space-between">
-                        <b>Parcela {{installmentsResume.id}}</b>
-                        <v-chip small :color="getColor(installmentsResume.status)" dark>
-                          <b>{{installmentsResume.status}}</b>
-                        </v-chip>
-                      </div>
-                      <v-layout class="d-flex justify-space-between">
-                        <v-flex xs12 sm8 md8 class="mr-3">
-                          <v-alert
-                            dense
-                            outlined
-                            icon="mdi-clipboard-alert-outline"
-                            border="left"
-                            color="indigo"
-                            type="error"
-                          >
-                            <div>Valor da parcela</div>
-                            <v-divider></v-divider>
-                            <div>
-                              <b v-text="convertMoney(installmentsResume.value)"></b>
-                            </div>
-                          </v-alert>
-                        </v-flex>
-
-                        <v-flex xs12 sm6 md4>
-                          <v-alert
-                            icon="mdi-firework"
-                            border="left"
-                            color="indigo"
-                            dense
-                            type="info"
-                          >
-                            <div>Valor Restante</div>
-                            <v-divider></v-divider>
-                            <div>
-                              <b v-text="convertMoney(installmentsResume.remaing)"></b>
-                            </div>
-                          </v-alert>
-                        </v-flex>
-                      </v-layout>
-                      <v-layout v-if="parcelRemaing != '0.00'">
-                        <v-flex xs12 sm8 md8 class="mr-3">
-                          <v-text-field
-                            outlined
-                            v-model="receiveValue"
-                            small
-                            dense
-                            flat
-                            label="Valor á receber"
-                          ></v-text-field>
-                        </v-flex>
-                        <v-flex xs12 sm6 md4>
-                          <v-btn block outlined @click="sendReceive()" color="primary">Receber</v-btn>
-                        </v-flex>
-                      </v-layout>
-                      <v-divider></v-divider>
-                      <div class="pa-4 subtitle-2">
-                        <b>Historico de Cobrança</b>
-                      </div>
-
-                      <div v-if="historic">
-                        <v-list v-for="item in historic" :key="item.id" two-line>
-                          <v-list-item>
-                            <v-list-item-avatar>
-                              <v-icon>mdi-calendar-check-outline</v-icon>
-                            </v-list-item-avatar>
-                            <v-list-item-content>
-                              <v-list-item-title>{{item.details}}</v-list-item-title>
-                              <v-list-item-subtitle v-text="convertMoney(item.amount)"></v-list-item-subtitle>
-                            </v-list-item-content>
-                            <v-list-item-action>
-                              <v-list-item-title v-text="convertDate(item.date)"></v-list-item-title>
-                              <v-list-item-subtitle>{{item.hour}}</v-list-item-subtitle>
-                            </v-list-item-action>
-                          </v-list-item>
-                          <v-divider></v-divider>
-                        </v-list>
-                      </div>
-                      <div v-else>
-                        <v-alert
-                          icon="mdi-alert-box"
-                          prominent
-                          text
-                          type="info"
-                        >Não existe historico de cobrança para essa parcela</v-alert>
-                      </div>
+            <v-layout row justify-center>
+              <v-dialog v-model="innstallment" persistent max-width="700px">
+                <v-card flat>
+                  <v-toolbar dense flat dark color="primary">
+                    <v-toolbar-title>Detalhes</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-btn @click="innstallment = false" icon dark>
+                      <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                  </v-toolbar>
+                  <div class="col-sm-12">
+                    <v-alert v-show="showAlert" dense text type="info" dismissible>{{msg}}</v-alert>
+                    <div class="pa-4 d-flex justify-space-between">
+                      <b>Parcela {{installmentsResume.id}}</b>
+                      <v-chip small :color="getColor(installmentsResume.status)" dark>
+                        <b>{{installmentsResume.status}}</b>
+                      </v-chip>
                     </div>
-                  </v-card>
-                </v-dialog>
-              </v-layout>
-            </v-card>
-          </v-dialog>
-        </div>
+                    <v-layout class="d-flex justify-space-between">
+                      <v-flex xs12 sm8 md8 class="mr-3">
+                        <v-alert
+                          dense
+                          outlined
+                          icon="mdi-clipboard-alert-outline"
+                          border="left"
+                          color="indigo"
+                          type="error"
+                        >
+                          <div>Valor da parcela</div>
+                          <v-divider></v-divider>
+                          <div>
+                            <b v-text="convertMoney(installmentsResume.value)"></b>
+                          </div>
+                        </v-alert>
+                      </v-flex>
+
+                      <v-flex xs12 sm6 md4>
+                        <v-alert icon="mdi-firework" border="left" color="indigo" dense type="info">
+                          <div>Valor Restante</div>
+                          <v-divider></v-divider>
+                          <div>
+                            <b v-text="convertMoney(installmentsResume.remaing)"></b>
+                          </div>
+                        </v-alert>
+                      </v-flex>
+                    </v-layout>
+                    <v-layout v-if="parcelRemaing != '0.00'">
+                      <v-flex xs12 sm8 md8 class="mr-3">
+                        <v-text-field
+                          outlined
+                          v-model="receiveValue"
+                          small
+                          dense
+                          flat
+                          label="Valor á receber"
+                        ></v-text-field>
+                      </v-flex>
+                      <v-flex xs12 sm6 md4>
+                        <v-btn block outlined @click="sendReceive()" color="primary">Receber</v-btn>
+                      </v-flex>
+                    </v-layout>
+                    <v-divider></v-divider>
+                    <div class="pa-4 subtitle-2">
+                      <b>Historico de Cobrança</b>
+                    </div>
+
+                    <div v-if="historic">
+                      <v-list v-for="item in historic" :key="item.id" two-line>
+                        <v-list-item>
+                          <v-list-item-avatar>
+                            <v-icon>mdi-calendar-check-outline</v-icon>
+                          </v-list-item-avatar>
+                          <v-list-item-content>
+                            <v-list-item-title>{{item.details}}</v-list-item-title>
+                            <v-list-item-subtitle v-text="convertMoney(item.amount)"></v-list-item-subtitle>
+                          </v-list-item-content>
+                          <v-list-item-action>
+                            <v-list-item-title v-text="convertDate(item.date)"></v-list-item-title>
+                            <v-list-item-subtitle>{{item.hour}}</v-list-item-subtitle>
+                          </v-list-item-action>
+                        </v-list-item>
+                        <v-divider></v-divider>
+                      </v-list>
+                    </div>
+                    <div v-else>
+                      <v-alert
+                        icon="mdi-alert-box"
+                        prominent
+                        text
+                        type="info"
+                      >Não existe historico de cobrança para essa parcela</v-alert>
+                    </div>
+                  </div>
+                </v-card>
+              </v-dialog>
+            </v-layout>
+          </v-card>
+        </v-dialog>
       </div>
+      <v-layout row justify-center>
+        <v-dialog v-model="newloan" persistent max-width="700px">
+          <v-card flat>
+            <v-toolbar dense flat dark color="primary">
+              <v-toolbar-title>Novo Emprestimo</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn @click="newloan = false" icon dark>
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-toolbar>
+
+            <v-progress-linear
+              :active="loading"
+              :indeterminate="loading"
+              absolute
+              height="5"
+              color="deep-purple accent-4"
+            ></v-progress-linear>
+            <div class="col-sm-12">
+              <v-alert v-show="succesAlert" dense text type="info" dismissible>{{msg}}</v-alert>
+              <v-alert v-show="errorAlert" dense text type="error" dismissible>{{msg}}</v-alert>
+              <v-card flat class="pa-4">
+                <v-autocomplete
+                  class="mb-5"
+                  v-model="planSelect.idClient"
+                  :items="items"
+                  outlined
+                  :loading="isLoading"
+                  :search-input.sync="search"
+                  chips
+                  dense
+                  clearable
+                  hide-details
+                  hide-selected
+                  item-text="name"
+                  item-value="id"
+                  label="Buscar empresa..."
+                >
+                  <template v-slot:selection="{ attr, on, item, selected }">
+                    <v-chip
+                      v-bind="attr"
+                      :input-value="selected"
+                      color="blue-grey"
+                      class="white--text"
+                      v-on="on"
+                      small
+                    >
+                      <span v-text="item.name"></span>
+                    </v-chip>
+                  </template>
+                  <template v-slot:item="{ item }">
+                    <v-list-item-avatar
+                      color="indigo"
+                      class="headline font-weight-light white--text"
+                    >{{ item.name.charAt(0) }}</v-list-item-avatar>
+                    <v-list-item-content>
+                      <v-list-item-title v-text="item.name"></v-list-item-title>
+                      <v-list-item-subtitle v-text="item.symbol"></v-list-item-subtitle>
+                    </v-list-item-content>
+                  </template>
+                </v-autocomplete>
+                <div>
+                  <v-select
+                    v-model="planSelect.idPlano"
+                    dense
+                    :items="plans"
+                    @change="onChange"
+                    label="Selecione plano"
+                    outlined
+                    item-text="value"
+                    item-value="id"
+                  ></v-select>
+                </div>
+                <div class>
+                  <div class="mb-2">Quantidade de parcelas</div>
+                  <v-radio-group
+                    v-model="planSelect.quantityParcel"
+                    class="d-flex justify-space-between"
+                  >
+                    <v-radio color="primary" value="11" v-bind:label="'11 parcelas de ' + this.p11"></v-radio>
+                    <v-radio color="primary" value="24" v-bind:label="'24 parcelas de ' + this.p24"></v-radio>
+                  </v-radio-group>
+                </div>
+                <div class>
+                  <div class="mb-2">Cobrar finais de semana</div>
+                  <div class="d-flex justify-space-between">
+                    <v-checkbox
+                      color="primary"
+                      label="Sábado"
+                      v-model="planSelect.daysValue"
+                      value="1"
+                    ></v-checkbox>
+                    <v-checkbox
+                      color="primary"
+                      label="Domingo"
+                      v-model="planSelect.daysValue"
+                      value="2"
+                    ></v-checkbox>
+                  </div>
+                </div>
+                <v-btn block color="primary" @click="getInstallments()" dark>Confirmar</v-btn>
+              </v-card>
+            </div>
+          </v-card>
+        </v-dialog>
+      </v-layout>
     </v-content>
   </div>
 </template>
@@ -323,8 +399,36 @@ export default {
   },
   mounted: function () {
     this.getContractsDay()
+    this.listAllPlans();
   },
   data: () => ({
+
+    msg: "",
+    succesAlert: false,
+    errorAlert: false,
+    loading: false,
+    newloan: false,
+    p11: "",
+    p24: "",
+    planSelect: {
+      idClient: "",
+      idPlano: "",
+      planValue: "",
+      quantityParcel: "",
+      parcelValue: "",
+      daysValue: [],
+      installments: []
+    },
+    row: null,
+    isLoading: false,
+    items: [],
+    idClient: "",
+    parcel: [],
+    interval: {},
+    value: 0,
+    plans: [],
+    Buscar: "",
+    listParcel: [],
     sheet: false,
     innstallment: false,
     date: new Date().toISOString().substr(0, 7),
@@ -395,6 +499,7 @@ export default {
     receiveValue: '',
     showAlert: false,
     msg: '',
+    viewContractId: '',
 
   }),
   methods: {
@@ -446,6 +551,7 @@ export default {
     },
     viewContract(item) {
       this.contractView = true
+      this.viewContractId = item.id
       let form = new FormData()
       form.append('get-contract', 'true')
       form.append('contract-id', item.id)
@@ -569,7 +675,6 @@ export default {
       this.innstallment = true
     },
     getInstallment(item) {
-
       console.log(item);
 
       this.contractView = true
@@ -657,6 +762,10 @@ export default {
               this.msg = json.msg;
               this.showAlert = true
               this.getInstallment(this.installmentsResume.id)
+              this.viewContract(this.viewContractId)
+              this.getContractsDay()
+
+
               // this.installmentsResume.remaing = remaing
             })
         } else {
@@ -668,6 +777,171 @@ export default {
         this.errorCaixa = true;
       }
     },
+    getInstallments() {
+      let today = new Date();
+      let d = today.getDate() + 1;
+      let m = today.getMonth();
+      let y = today.getFullYear();
+      let obj = [];
+      let verificar = [];
+      let curdate = [];
+      let number = 1;
+      this.plans.forEach(element => {
+        if (element.id == this.planSelect.idPlano) {
+          this.p11 = element.p11;
+          if (this.planSelect.quantityParcel == 11) {
+            return (this.planSelect.parcelValue = element.p11);
+          } else {
+            return (this.planSelect.parcelValue = element.p24);
+          }
+        }
+      });
+      let cobrar = this.planSelect.daysValue || "";
+      for (let i = 0; i < this.planSelect.quantityParcel; i++) {
+        let date = new Date(y, m, d + i);
+        let array;
+        let dataStr = date.toString();
+        if (dataStr.indexOf("Sat") < 0) {
+          array = [
+            this.planSelect.parcelValue,
+            date.toLocaleDateString("pt-br"),
+            number,
+            "cobrar"
+          ];
+        }
+        if (dataStr.indexOf("Sun") < 0) {
+          array = [
+            this.planSelect.parcelValue,
+            date.toLocaleDateString("pt-br"),
+            number,
+            "cobrar"
+          ];
+        }
+        if (cobrar.indexOf("1") < 0 && dataStr.indexOf("Sat") >= 0) {
+          array = [
+            this.planSelect.parcelValue,
+            date.toLocaleDateString("pt-br"),
+            number,
+            "não-cobrar"
+          ];
+          this.planSelect.quantityParcel++;
+          number--;
+        }
+        if (cobrar.indexOf("2") < 0 && dataStr.indexOf("Sun") >= 0) {
+          array = [
+            this.planSelect.parcelValue,
+            date.toLocaleDateString("pt-br"),
+            number,
+            "não-cobrar"
+          ];
+          this.planSelect.quantityParcel++;
+          number--;
+        }
+        verificar.push(array);
+        if (array[3] === "cobrar") obj.push(array);
+
+        number++;
+      }
+      this.planSelect.installments = obj;
+      this.confirm();
+      this.getContractsDay()
+
+    },
+    confirm() {
+      this.loading = true;
+      const url = `${vars.host}contractController.php`;
+      let form = new FormData();
+      form.append("confirm", "true");
+      let json = JSON.stringify(this.planSelect.installments);
+      form.append("parcelas", json);
+      form.append("plan-id", this.planSelect.idPlano);
+      form.append("client-id", this.planSelect.idClient);
+      form.append("user-id", "3");
+      fetch(url, {
+        method: "POST",
+        body: form
+      })
+        .then(resp => {
+          return resp.json();
+        })
+        .then(json => {
+          this.msg = json.msg;
+          // document.getElementById("respp").innerHTML = json
+          if (json.msg.indexOf("Sucesso") > 0) {
+            this.succesAlert = true;
+            // alert(json.msg)
+            // this.$router.push('home')
+            this.loading = false;
+            this.getContractsDay()
+          } else {
+            this.errorAlert = true;
+          }
+        });
+    },
+    onChange(event) {
+      this.plans.forEach(p => {
+        if (p.id == event) {
+          this.p11 = p.p11;
+          this.p24 = p.p24;
+        }
+      });
+    },
+    verifyLogin() {
+      if (
+        !localStorage.getItem("user-id") &&
+        !localStorage.getItem("user-name")
+      ) {
+        this.$router.push("/");
+      }
+    },
+    listAllPlans() {
+      const url = `${vars.host}planController.php`;
+      let formData = new FormData();
+      formData.append("all-plans", "true");
+      fetch(url, {
+        method: "POST",
+        body: formData
+      })
+        .then(resp => {
+          return resp.json();
+        })
+        .then(json => {
+          this.plans = json;
+        });
+    },
+  },
+  watch: {
+    model(val) {
+      if (val != null) this.tab = 0;
+      else this.tab = null;
+    },
+    loading(val) {
+      if (!val) return;
+
+      setTimeout(() => (this.loading = false), 3000);
+    },
+
+    search(val) {
+      // Items have already been loaded
+      if (this.items.length > 0) return;
+      this.isLoading = true;
+      const url = `${vars.host}clientController.php`;
+      let formData = new FormData();
+      formData.append("all-clients", "true");
+      fetch(url, {
+        method: "POST",
+        body: formData
+      })
+        .then(resp => {
+          return resp.json();
+        })
+        .then(json => {
+          json.forEach(item => {
+            this.items.push(item);
+          });
+        })
+        .finally(() => (this.isLoading = false));
+    }
   }
 
 }

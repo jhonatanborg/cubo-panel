@@ -3,7 +3,7 @@
     <Menu />
     <v-content>
       <v-container class="col-sm-12">
-        <v-card class flat outlined>
+        <v-card class="col-sm-12" flat>
           <v-card-title color="red">
             Usuários
             <v-spacer></v-spacer>
@@ -14,7 +14,7 @@
                 label="Buscar"
                 single-line
                 hide-details
-                solo
+                outlined
                 dense
                 class="mr-2"
               ></v-text-field>

@@ -1,77 +1,55 @@
 <template>
   <div>
     <Menu />
-
-    <v-content>
-      <v-card flat class="col-sm-12">
-        <v-layout>
-          <v-flex xs12 sm6 md3 class="mr-3">
-            <v-alert icon="mdi-calendar-check" prominent border="left" color="cyan" dark outlined>
-              <div>
-                Ativos
-                <v-divider></v-divider>
-                <b class="title">11111</b>
-              </div>
-            </v-alert>
-          </v-flex>
-          <v-flex xs12 sm6 md3 class="mr-3">
-            <v-alert icon="mdi-firework" prominent border="left" color="cyan" dark outlined>
-              <div>
-                Inativos
-                <v-divider></v-divider>
-                <b class="title">11111</b>
-              </div>
-            </v-alert>
-          </v-flex>
-          <v-flex xs12 sm6 md3 class="mr-3">
-            <v-alert icon="mdi-calendar-remove" prominent border="left" color="cyan" dark outlined>
-              <div>
-                Fisicos
-                <v-divider></v-divider>
-                <b class="title">11111</b>
-              </div>
-            </v-alert>
-          </v-flex>
-          <v-flex xs12 sm6 md3>
-            <v-alert
-              icon="mdi-calendar-multiple"
-              border="left"
-              outlined
-              prominent
-              color="cyan"
-              dark
-            >
-              <div>
-                Juridicos
-                <v-divider></v-divider>
-                <b class="title">111111</b>
-              </div>
-            </v-alert>
-          </v-flex>
-        </v-layout>
-        <div class="d-flex justify-end" flat>
-          <v-btn @click.stop="dialog = true" color="primary">Novo cliente</v-btn>
+    <div class="col-sm-12">
+      <v-content white fluid>
+        <div class="col-sm-12">
+          <v-divider></v-divider>
         </div>
-      </v-card>
+        <v-card flat class="col-sm-12">
+          <v-card-title dense class="pa-1 v-card-title">
+            <div class="col-sm-12 d-flex justify-space-between">
+              <div class="col-sm-6 d-flex justify-space-between">
+                <v-menu
+                  ref="menu"
+                  v-model="menu"
+                  :close-on-content-click="false"
+                  :return-value.sync="date"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="290px"
+                >
+                  <template v-slot:activator="{ on }">
+                    <v-text-field
+                      class="mr-5"
+                      v-model="dateConverted"
+                      label="Data inicial"
+                      outlined
+                      dense
+                      v-on="on"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker locale="pt-br" v-model="date" no-title scrollable>
+                    <v-spacer></v-spacer>
+                    <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+                    <v-btn text color="primary" @click="$refs.menu.save(date), dateFinal = date">OK</v-btn>
+                  </v-date-picker>
+                </v-menu>
 
-      <v-container class="col-sm-12">
-        <v-card class flat outlined>
-          <v-card-title color="red">
-            Usuários
-            <v-spacer></v-spacer>
-            <div class="d-flex justify-space-between">
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Buscar"
-                single-line
-                hide-details
-                solo
-                dense
-                class="mr-2"
-              ></v-text-field>
-              <v-spacer></v-spacer>
-              <v-btn color="primary" @click.stop="userInsert = true">Novo Usuário</v-btn>
+                <v-btn class="mr-5" dark color="primary" @click="getBoxDay()">Buscar</v-btn>
+              </div>
+              <div class="col-sm-4">
+                <v-text-field
+                  outlined
+                  v-model="search"
+                  append-icon="mdi-magnify"
+                  label="Buscar"
+                  single-line
+                  hide-details
+                  dense
+                  class="mr-2"
+                ></v-text-field>
+              </div>
             </div>
           </v-card-title>
           <v-data-table
@@ -113,17 +91,16 @@
                 <v-btn icon dark @click="detailsBox = false">
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
-                <v-toolbar-title>Caixa 01210</v-toolbar-title>
+                <v-toolbar-title>
+                  Caixa
+                  <b>{{ boxResume.id }}</b>
+                </v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
 
               <v-divider></v-divider>
               <div class="container pa-3 col-sm-12">
                 <div class="d-flex justify-space-between">
-                  <div>
-                    Código do caixa
-                    <b>{{ boxResume.id }}</b>
-                  </div>
                   <v-spacer></v-spacer>
                   <div>
                     <v-chip small :color="getColor(boxResume.status)" dark>
@@ -191,9 +168,9 @@
                     </v-alert>
                   </v-flex>
                 </v-layout>
-                <v-card outlined flat class="col-sm-12">
+                <v-card flat class="col-sm-12">
                   <v-card-title color="red">
-                    caIXAS
+                    Transações
                     <v-spacer></v-spacer>
                     <div class="d-flex justify-space-between">
                       <v-text-field
@@ -202,7 +179,7 @@
                         label="Buscar"
                         single-line
                         hide-details
-                        solo
+                        outlined
                         dense
                         class="mr-2"
                       ></v-text-field>
@@ -345,8 +322,8 @@
             </v-card>
           </v-dialog>
         </v-layout>
-      </v-container>
-    </v-content>
+      </v-content>
+    </div>
   </div>
 </template>
 
@@ -362,10 +339,14 @@ export default {
     this.getBoxDay();
   },
   data: () => ({
+    date: new Date().toISOString().substr(0, 10),
+    dateFinal: new Date().toISOString().substr(0, 10),
+    menu: false,
+    menuFinal: false,
     search: "",
     innstallment: false,
     detailsBox: false,
-    date: new Date(),
+
     menu: false,
     modal: false,
     menu2: false,
@@ -425,6 +406,18 @@ export default {
     showAlert: false,
     msg: '',
   }),
+  computed: {
+    dateConverted: function () {
+      var parts = this.date.split(" ")[0].split("-");
+      var mydate = new Date(parts[0], parts[1] - 1, parts[2]);
+      return mydate.toLocaleDateString();
+    },
+    dateConvertedFinal: function () {
+      var parts = this.dateFinal.split(" ")[0].split("-");
+      var mydateFinal = new Date(parts[0], parts[1] - 1, parts[2]);
+      return mydateFinal.toLocaleDateString();
+    }
+  },
   methods: {
     convertDate(date) {
       var parts = date.split(" ")[0].split("-");
@@ -444,13 +437,10 @@ export default {
       return clientName;
     },
     getBoxDay(date = this.date) {
-      var local = new Date(date);
-      local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
-      let dateMysql = local.toJSON().slice(0, 10);
-      console.log(dateMysql);
+      console.log(this.date);
       let form = new FormData();
       form.append("get-box-day", "true");
-      form.append("date", dateMysql);
+      form.append("date", this.date);
       fetch(url, {
         method: "POST",
         body: form
@@ -650,4 +640,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.v-card-title {
+  height: 80px;
+}
+</style>

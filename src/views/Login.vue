@@ -80,7 +80,6 @@ export default {
       form.append('login', true)
       form.append('email', this.user)
       form.append('pass', this.pass)
-      console.log("login");
       fetch(url, {
         method: "POST",
         body: form

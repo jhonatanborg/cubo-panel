@@ -248,7 +248,7 @@ export default {
   },
   methods: {
     editItem(item) {
-      //   console.log(item)
+
       this.editClient = true
       this.userDialog = true
       this.editedIndex = this.users.indexOf(item)
@@ -271,7 +271,7 @@ export default {
       }).then(resp => {
         return resp.json()
       }).then(json => {
-        console.log(json)
+
         if (json.msg.indexOf("sucesso") > 0) {
           this.succesAlert = true;
           // this.$router.push('home')
@@ -305,7 +305,7 @@ export default {
       }).then(resp => {
         return resp.json()
       }).then(json => {
-        console.log(json)
+
         if (json.msg.indexOf("Sucesso") > 0) {
           this.succesAlert = true;
           this.msg = json.msg
@@ -328,11 +328,9 @@ export default {
       }).then(resp => {
         return resp.json()
       }).then(json => {
-        console.log(json);
+
         this.users = json
-        // console.log(this.usersActive)
-        // console.log(this.usersInactive)
-        // document.getElementById('resp').innerHTML = json
+
       })
     },
 

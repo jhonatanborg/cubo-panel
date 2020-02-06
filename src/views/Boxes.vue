@@ -434,7 +434,6 @@ export default {
       return clientName;
     },
     getBoxDay(date = this.date) {
-      console.log(this.date);
       let form = new FormData();
       form.append("get-box-day", "true");
       form.append("date", this.date);
@@ -484,7 +483,6 @@ export default {
         .then(json => {
 
           this.boxResume.installmentsBox = json.installments
-          console.log(this.boxResume.installmentsBox);
 
           this.boxResume.valueTotal = json.valueTotal
           this.boxResume.inputs = json.inputs
@@ -503,7 +501,6 @@ export default {
 
     },
     getInstallment(item) {
-      console.log(item);
       this.contractView = true
       const url = `${vars.host}parcelController.php`;
       let formData = new FormData();
@@ -517,7 +514,6 @@ export default {
           return resp.json();
         })
         .then(json => {
-          console.log(json);
 
           let parcel = json[0]
           let array = [];
@@ -536,7 +532,6 @@ export default {
           this.installmentsResume.value = parcel.value
           this.installmentsResume.historic = parcel.historic
           this.innstallment = true
-          console.log(parcel);
         });
     },
     sendReceive() {
@@ -585,12 +580,11 @@ export default {
               return resp.json();
             })
             .then(json => {
-              // document.getElementById('resp').innerHTML = json
-              // console.log(json);
+
               this.msg = json.msg;
               this.showAlert = true
               this.getInstallment(this.installmentsResume.id)
-              // this.installmentsResume.remaing = remaing
+
             })
         } else {
           this.msg = "Valor inválido";
@@ -602,12 +596,6 @@ export default {
       }
     },
     searchFilter() {
-      // console.log(this.parcel)
-      // console.log(this.idClient)
-      // console.log(this.date1)
-      // console.log(this.date2)
-      // console.log(this.clients)
-      // console.log(this.parcel)
       const url = `${vars.host}parcelController.php`
       let formData = new FormData()
       formData.append('filter', 'true')
@@ -616,7 +604,6 @@ export default {
       formData.append('status', this.parcel)
       formData.append('date-initial', this.date1)
       formData.append('date-final', this.date2)
-      console.log(this.idClient)
       // document.getElementById('load').classList.remove('hide')
       fetch(url, {
         method: 'POST',
@@ -624,13 +611,8 @@ export default {
       }).then(resp => {
         return resp.json()
       }).then(json => {
-        console.log(json);
 
-        // this.installments = json
-        // this.installmentsTotal = json.length
-        // console.log(this.installments)
-        // document.getElementById('load').classList.add('hide')
-        // this.sheet = false
+
       })
     },
   }

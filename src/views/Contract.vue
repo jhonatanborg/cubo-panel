@@ -549,7 +549,7 @@ export default {
       let form = new FormData()
       form.append('get-contracts', 'true')
       form.append('date', date)
-      console.log('merda', this.date);
+
 
       fetch(url, {
         method: "POST",
@@ -562,8 +562,7 @@ export default {
           contracts.push(contract)
         })
         this.listContracts = contracts
-        //console.log(this.listContracts)
-        // document.getElementById('resp').innerHTML = json
+
       })
     },
     getColor(status) {
@@ -592,7 +591,7 @@ export default {
       return (toCurrency(money, 'BRL'))
     },
     viewContract(item) {
-      console.log('item', item);
+
 
       this.contractView = true
       this.viewContractId = item.id
@@ -693,7 +692,7 @@ export default {
 
     },
     innstallmentDetails(parcel) {
-      console.log(parcel);
+
       let array = []
       array.push(JSON.parse(parcel.historic))
 
@@ -744,7 +743,7 @@ export default {
           this.installmentsResume.value = parcel.value
           this.installmentsResume.historic = parcel.historic
           this.innstallment = true
-          console.log(parcel);
+
         });
     },
     sendReceive() {
@@ -793,8 +792,8 @@ export default {
               return resp.json();
             })
             .then(json => {
-              // document.getElementById('resp').innerHTML = json
-              // console.log(json);
+
+
               this.msg = json.msg;
               this.showAlert = true
               this.feedback = "info"

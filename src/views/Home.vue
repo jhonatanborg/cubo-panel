@@ -436,7 +436,7 @@ export default {
           return resp.json();
         })
         .then(json => {
-          console.log(json);
+
           this.listParcel = json;
           json.forEach(item => {
             switch (item.status) {

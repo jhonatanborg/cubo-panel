@@ -409,10 +409,7 @@ export default {
               break;
           }
         });
-        console.log(qtdFisica);
-        console.log(qtdJurídica);
-        console.log(qtdAtivos);
-        console.log(qtdInativos);
+
         this.clientsResume.qtdAtivos = qtdAtivos
         this.clientsResume.qtdInativos = qtdInativos
         this.clientsResume.qtdFisicos = qtdFisica
@@ -444,7 +441,7 @@ export default {
         }).then(resp => {
           return resp.json()
         }).then(json => {
-          console.log(json)
+
           this.dialog = false
           this.clients = []
           this.listAllClients()
@@ -493,7 +490,7 @@ export default {
       }).then(resp => {
         return resp.json()
       }).then(json => {
-        console.log(json)
+
         let qtdOpens = 0
         let qtdCloses = 0
         let quantityInstallments = 0
@@ -521,7 +518,7 @@ export default {
         this.resumeClient.contractsSuccess = qtdCloses
         this.resumeClient.installments = quantityInstallments
         this.resumeClient.status = clientStatus
-        console.log(qtdCloses);
+
         this.dialog = true
       })
     },
@@ -543,7 +540,7 @@ export default {
       }).then(resp => {
         return resp.json()
       }).then(json => {
-        console.log(json)
+
       })
     },
     editStatusSend() {

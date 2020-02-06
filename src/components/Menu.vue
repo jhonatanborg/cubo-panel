@@ -295,13 +295,10 @@ export default {
           return resp.json();
         })
         .then(json => {
-          console.log(json);
           this.msg = json.msg
           this.alert = true
-          // document.getElementById('resp').innerHTML = json
           localStorage.setItem("boxStatus", "FECHADO");
           localStorage.setItem("boxId", null);
-          // console.log(json)
           setTimeout(() => {
             this.alert = false
           }, 10000);
@@ -330,7 +327,6 @@ export default {
             this.receiveds = json.receiveds;
             this.totalValue = json.valueTotal;
             this.oldValue = json.boxInfo[0].openValue;
-            console.log(json)
           });
       }
     },
@@ -345,7 +341,6 @@ export default {
     },
     levelVerify() {
       let levelAdm = localStorage.getItem("level");
-      // console.log(levelAdm)
       if (levelAdm === "Administrador") {
         this.levelAdm = true;
       } else {

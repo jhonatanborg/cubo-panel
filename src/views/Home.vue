@@ -25,7 +25,7 @@
             </v-flex>
             <v-flex xs12 sm6 md3 class="mr-3">
               <v-alert
-                icon="mdi-firework"
+                icon="mdi-calendar-question"
                 prominent
                 border="left"
                 color="blue lighten-1"

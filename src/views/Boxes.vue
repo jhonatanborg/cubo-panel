@@ -9,7 +9,7 @@
         <v-card flat class="col-sm-12">
           <v-card-title dense class="pa-1 v-card-title">
             <div class="col-sm-12 d-flex justify-space-between">
-              <div class="col-sm-6 d-flex justify-space-between">
+              <div class="d-flex justify-space-between">
                 <v-menu
                   ref="menu"
                   v-model="menu"
@@ -32,23 +32,21 @@
                   <v-date-picker locale="pt-br" v-model="date" no-title scrollable>
                     <v-spacer></v-spacer>
                     <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-                    <v-btn text color="primary" @click="$refs.menu.save(date), dateFinal = date">OK</v-btn>
+                    <v-btn text color="primary" @click="$refs.menu.save(date), getBoxDay(date) ">OK</v-btn>
                   </v-date-picker>
                 </v-menu>
-
-                <v-btn class="mr-5" dark color="primary" @click="getBoxDay()">Buscar</v-btn>
-              </div>
-              <div class="col-sm-4">
-                <v-text-field
-                  outlined
-                  v-model="search"
-                  append-icon="mdi-magnify"
-                  label="Buscar"
-                  single-line
-                  hide-details
-                  dense
-                  class="mr-2"
-                ></v-text-field>
+                <div>
+                  <v-text-field
+                    outlined
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="Buscar"
+                    single-line
+                    hide-details
+                    dense
+                    class="mr-2"
+                  ></v-text-field>
+                </div>
               </div>
             </div>
           </v-card-title>
@@ -346,7 +344,6 @@ export default {
     search: "",
     innstallment: false,
     detailsBox: false,
-
     menu: false,
     modal: false,
     menu2: false,

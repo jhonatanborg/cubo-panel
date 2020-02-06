@@ -60,16 +60,14 @@
         <span class="hidden-sm-and-down text-white">Cubo Painel</span>
       </v-toolbar-title>
       <v-spacer />
-      <div v-if="stateBox != 'ABERTO'">
-        <v-btn @click="openBoxUser = true " icon>
-          <v-icon>mdi-apps</v-icon>
-        </v-btn>
-      </div>
-      <div v-if="stateBox == 'ABERTO'">
-        <v-btn @click="closeBoxUser = true " icon>
-          <v-icon>mdi-apps</v-icon>
-        </v-btn>
-      </div>
+
+      <v-btn v-show="stateBox != 'ABERTO'" @click="openBoxUser = true " icon>
+        <v-icon>mdi-apps</v-icon>
+      </v-btn>
+      <v-btn v-if="stateBox == 'ABERTO'" @click="closeBoxUser = true " icon>
+        <v-icon>mdi-apps</v-icon>
+      </v-btn>
+
       <v-btn @click="logout()" icon>
         <v-icon>mdi-logout-variant</v-icon>
       </v-btn>
@@ -84,20 +82,20 @@
         <v-toolbar dense flat dark color="primary">
           <v-toolbar-title>Caixa</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn @click="openBoxUser = false " icon dark>
+          <v-btn @click="openBoxUser = false, alert = false " icon dark>
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
-        <!-- <v-progress-linear
-          :active="loading"
-          :indeterminate="loading"
-          absolute
-          height="5"
-          color="deep-purple accent-4"
-        ></v-progress-linear>-->
         <div class="col-sm-12">
-          <v-alert v-show="errorAlert" dense text type="error" dismissible>{{msg}}</v-alert>
-          <v-alert v-show="succesAlert" dense text type="info" dismissible>{{msg}}</v-alert>
+          <v-alert
+            dark
+            dense
+            icon="mdi-alert-outline"
+            prominent
+            text
+            v-model="alert"
+            type="info"
+          >{{msg}}</v-alert>
           <v-list flat nav hide-overlay>
             <v-list-item>
               <v-list-item-icon>
@@ -126,13 +124,14 @@
         <v-toolbar dense flat dark color="primary">
           <v-toolbar-title>Caixa</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn @click="closeBoxUser = false " icon dark>
+          <v-btn @click="closeBoxUser = false, alert = false " icon dark>
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
 
         <div class="col-sm-12">
           <v-list flat nav hide-overlay>
+            <v-alert v-show="alert == true" type="info" dense text dismissible>{{msg}}</v-alert>
             <v-list-item>
               <v-list-item-icon>
                 <v-icon>mdi-account-lock</v-icon>
@@ -144,31 +143,37 @@
             <v-divider></v-divider>
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title>R$ 150,00</v-list-item-title>
-                <v-list-item-subtitle>Recebimentos</v-list-item-subtitle>
+                <v-list-item-title v-text="convertMoney(receiveds)"></v-list-item-title>
+                <v-list-item-subtitle>Saldo do caixa</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
             <v-divider></v-divider>
 
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title>R$ 150,00</v-list-item-title>
+                <v-list-item-title v-text="convertMoney(inputs)"></v-list-item-title>
                 <v-list-item-subtitle>Entradas</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
+
             <v-divider></v-divider>
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title>R$ 150,00</v-list-item-title>
+                <v-list-item-title v-text="convertMoney(outputs)"></v-list-item-title>
                 <v-list-item-subtitle>Saídas</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
 
             <v-divider></v-divider>
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title v-text="convertMoney(oldValue)"></v-list-item-title>
+                <v-list-item-subtitle>Suprimento Inicial</v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+            <v-divider></v-divider>
           </v-list>
 
-          <v-alert v-show="succesAlert" dense text type="info" dismissible>{{msg}}</v-alert>
-          <v-alert v-show="errorAlert" dense text type="error" dismissible>{{msg}}</v-alert>
           <v-btn block color="primary" @click="closeBox()">Confirmar</v-btn>
         </div>
       </v-card>
@@ -185,18 +190,20 @@ export default {
   props: {
     source: String,
   },
+
   mounted: function () {
     // `this` points to the vm instance
     this.verifyBox();
     this.getBoxValues();
+    this.monitoringLocalStorage()
   },
   updated: function () {
     this.verifyBox();
     // this.levelVerify();
   },
   data: () => ({
-    errorAlert: false,
-    succesAlert: false,
+    feedBackBox: "info",
+    alert: false,
     msg: '',
     oldValue: 0,
     receiveds: 0,
@@ -204,7 +211,6 @@ export default {
     outputs: 0,
     valueDay: 0,
     totalValue: 0,
-
     selectRouter: "",
     valueBoxOpen: "",
     username: localStorage.getItem("user-name"),
@@ -215,15 +221,21 @@ export default {
     openBoxUser: false,
     closeBoxUser: false,
     stateBox: "",
-    items: [
-      { icon: 'mdi-contacts', text: 'Clientes', },
-      { icon: 'mdi-history', text: 'Caixas', },
-      { icon: 'mdi-content-copy', text: 'Parcelas', },
-      { icon: 'mdi-settings', text: 'Configurações', },
-      { icon: 'mdi-help-circle', text: 'Ajuda' },
-    ],
+
   }),
   methods: {
+    monitoringLocalStorage() {
+      if (!localStorage.getItem('user-id') || !localStorage.getItem('level')) {
+        this.logout()
+      }
+      if (localStorage.getItem('boxStatus') == 'ABERTO' && localStorage.getItem('boxId') == 'null') {
+        this.logout()
+      }
+
+      if (localStorage.getItem('boxStatus') != 'ABERTO' && localStorage.getItem('boxStatus') != 'FECHADO') {
+        this.logout()
+      }
+    },
     clientNameUpper(name) {
       let clientName = name.split(' ').map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' ')
       return clientName
@@ -248,16 +260,20 @@ export default {
             localStorage.setItem("boxStatus", "ABERTO");
             localStorage.setItem("boxId", json.boxInfo[0].boxId);
             this.msg = json.msg
-            this.succesAlert = true
             this.stateBox = json.boxInfo[0].status
             this.getBoxValues()
-            this.openBoxUser = false;
+            this.alert = true
+
           } else {
             this.msg = json.msg
-            this.succesAlert = true
+            this.alert = true
+
             localStorage.setItem("boxStatus", json.statusBox);
             localStorage.setItem("boxId", json.boxId);
             this.getBoxValues()
+            setTimeout(() => {
+              this.alert = false
+            }, 10000);
           }
 
 
@@ -280,19 +296,20 @@ export default {
         })
         .then(json => {
           console.log(json);
-
+          this.msg = json.msg
+          this.alert = true
           // document.getElementById('resp').innerHTML = json
           localStorage.setItem("boxStatus", "FECHADO");
           localStorage.setItem("boxId", null);
           // console.log(json)
-          this.msg = json.msg
-          this.succesAlert = true
-          this.closeBoxUser = false;
-          this.verifyBox
+          setTimeout(() => {
+            this.alert = false
+          }, 10000);
+          this.verifyBox()
         });
     },
     getBoxValues() {
-      localStorage.setItem("boxStatus", this.stateBox);
+      // localStorage.setItem("boxStatus", this.stateBox);
       if (this.stateBox == "ABERTO") {
         const url = `${vars.host}boxController.php`;
         let formData = new FormData();
@@ -313,7 +330,6 @@ export default {
             this.receiveds = json.receiveds;
             this.totalValue = json.valueTotal;
             this.oldValue = json.boxInfo[0].openValue;
-            this.dialogCloseBox = false;
             console.log(json)
           });
       }

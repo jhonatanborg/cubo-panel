@@ -6,7 +6,7 @@
         <v-card flat class="col-sm-12">
           <v-layout>
             <v-flex xs12 sm6 md3 class="mr-3">
-              <v-alert icon="mdi-calendar-check" prominent border="left" color="cyan" dark outlined>
+              <v-alert icon="mdi-account-check" prominent border="left" color="cyan" dark outlined>
                 <div>
                   Ativos
                   <v-divider></v-divider>
@@ -15,7 +15,7 @@
               </v-alert>
             </v-flex>
             <v-flex xs12 sm6 md3 class="mr-3">
-              <v-alert icon="mdi-firework" prominent border="left" color="cyan" dark outlined>
+              <v-alert icon="mdi-account-remove" prominent border="left" color="cyan" dark outlined>
                 <div>
                   Inativos
                   <v-divider></v-divider>
@@ -24,30 +24,16 @@
               </v-alert>
             </v-flex>
             <v-flex xs12 sm6 md3 class="mr-3">
-              <v-alert
-                icon="mdi-calendar-remove"
-                prominent
-                border="left"
-                color="cyan"
-                dark
-                outlined
-              >
+              <v-alert icon="mdi-account" prominent border="left" color="cyan" dark outlined>
                 <div>
-                  Fisicos
+                  Pessoa Física
                   <v-divider></v-divider>
                   <b class="title">{{clientsResume.qtdFisicos}}</b>
                 </div>
               </v-alert>
             </v-flex>
             <v-flex xs12 sm6 md3>
-              <v-alert
-                icon="mdi-calendar-multiple"
-                border="left"
-                outlined
-                prominent
-                color="cyan"
-                dark
-              >
+              <v-alert icon="mdi-account-box" border="left" outlined prominent color="cyan" dark>
                 <div>
                   Juridicos
                   <v-divider></v-divider>
@@ -95,7 +81,6 @@
                 </template>
                 <template v-slot:item.acao="{ item }">
                   <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
-                  <v-icon small>mdi-trash-can</v-icon>
                 </template>
               </v-data-table>
             </v-card>
@@ -236,14 +221,14 @@
                         </v-col>
 
                         <v-col cols="12" sm="4">
-                          <v-select
+                          <v-text-field
                             dense
                             v-model="editedItem.adress.district"
                             outlined
-                            :items="['Centro', 'Cidade nova', 'Residencial Sul', 'Residencial Sul']"
+                            type="text"
                             label="Bairro"
                             required
-                          ></v-select>
+                          ></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="8">
                           <v-text-field

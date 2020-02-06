@@ -14,6 +14,35 @@
         <v-card c class="col-sm-12" flat>
           <v-card-title color="red">
             <div class="d-flex justify-space-between">
+              <v-menu
+                ref="menu"
+                v-model="menu"
+                :close-on-content-click="false"
+                :return-value.sync="date"
+                transition="scale-transition"
+                offset-y
+                min-width="290px"
+              >
+                <template v-slot:activator="{ on }">
+                  <v-text-field
+                    class="mr-5"
+                    v-model="date"
+                    label="Data inicial"
+                    outlined
+                    dense
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-date-picker locale="pt-br" v-model="date" no-title type="month" scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="$refs.menu.save(date), getContractsDay(date)"
+                  >OK</v-btn>
+                </v-date-picker>
+              </v-menu>
               <v-text-field
                 v-model="search"
                 append-icon="mdi-magnify"
@@ -65,9 +94,7 @@
               <div>
                 <div class="mt-5 pb-5">
                   <div class="d-flex justify-space-between">
-                    <div>{{parcelDetails.clientName}}</div>
-                    <v-spacer></v-spacer>
-                    <div>Ultima atualização - 24/30/2019 00:30</div>
+                    <div v-text="clientNameUpper(parcelDetails.clientName)"></div>
                   </div>
                   <v-divider dense></v-divider>
                 </div>
@@ -191,7 +218,7 @@
                     </v-btn>
                   </v-toolbar>
                   <div class="col-sm-12">
-                    <v-alert v-show="showAlert" dense text type="info" dismissible>{{msg}}</v-alert>
+                    <v-alert v-show="showAlert" dense text :type="feedback" dismissible>{{msg}}</v-alert>
                     <div class="pa-4 d-flex justify-space-between">
                       <b>Parcela {{installmentsResume.id}}</b>
                       <v-chip small :color="getColor(installmentsResume.status)" dark>
@@ -402,7 +429,10 @@ export default {
     this.listAllPlans();
   },
   data: () => ({
-
+    date: new Date().toISOString().substr(0, 10),
+    dateFinal: new Date().toISOString().substr(0, 10),
+    menu: false,
+    menu: false,
     msg: "",
     succesAlert: false,
     errorAlert: false,
@@ -500,13 +530,27 @@ export default {
     showAlert: false,
     msg: '',
     viewContractId: '',
+    feedback: "error",
 
   }),
+  computed: {
+    dateConverted: function () {
+
+
+    },
+    dateConvertedFinal: function () {
+      var parts = this.dateFinal.split(" ")[0].split("-");
+      var mydateFinal = new Date(parts[0], parts[1] - 1, parts[2]);
+      return mydateFinal.toLocaleDateString();
+    }
+  },
   methods: {
     getContractsDay(date = this.date) {
       let form = new FormData()
       form.append('get-contracts', 'true')
       form.append('date', date)
+      console.log('merda', this.date);
+
       fetch(url, {
         method: "POST",
         body: form
@@ -533,7 +577,7 @@ export default {
       else return 'green'
     },
 
-    clientNameUpper(name) {
+    clientNameUpper(name = "Nome") {
       let clientName = name.split(' ').map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' ')
       return clientName
     },
@@ -546,10 +590,10 @@ export default {
       const toCurrency = (n, curr, LanguageFormat = undefined) =>
         Intl.NumberFormat(LanguageFormat, { style: 'currency', currency: curr }).format(n);
       return (toCurrency(money, 'BRL'))
-
-
     },
     viewContract(item) {
+      console.log('item', item);
+
       this.contractView = true
       this.viewContractId = item.id
       let form = new FormData()
@@ -571,16 +615,9 @@ export default {
           let totalPendente = 0
           let totalCobrado = 0
           let totalRecebida = 0
-
-          let name = element.client.name.split(' ')
-            .map(w => w[0].toUpperCase() + w.substr(1).toLowerCase())
-            .join(' ')
-
-          this.parcelDetails.clientName = name
+          this.parcelDetails.clientName = element.client.name
           this.installments = element.installments
           this.parcelDetails.qtdParcel = element.installments.length
-          console.log(this.installments);
-
           //capturando valor do plano
           this.parcelDetails.planValue = element.plan[0].value
 
@@ -675,8 +712,7 @@ export default {
       this.innstallment = true
     },
     getInstallment(item) {
-      console.log(item);
-
+      this.historic = null
       this.contractView = true
       const url = `${vars.host}parcelController.php`;
       let formData = new FormData();
@@ -761,20 +797,26 @@ export default {
               // console.log(json);
               this.msg = json.msg;
               this.showAlert = true
+              this.feedback = "info"
               this.getInstallment(this.installmentsResume.id)
-              this.viewContract(this.viewContractId)
-              this.getContractsDay()
-
-
-              // this.installmentsResume.remaing = remaing
+              let item = {
+                id: this.viewContractId
+              }
+              this.viewContract(item)
+              this.installmentsResume.remaing = remaing
             })
         } else {
           this.msg = "Valor inválido";
           this.snackbar = true;
+          this.showAlert = true
+          this.feedback = "error"
 
         }
       } else {
-        this.errorCaixa = true;
+        this.showAlert = true;
+        this.feedback = "error"
+        this.msg = "O caixa está fechado abra para fazer o recebimento"
+
       }
     },
     getInstallments() {

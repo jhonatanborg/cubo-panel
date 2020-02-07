@@ -262,6 +262,7 @@
                           small
                           dense
                           flat
+                          type="number"
                           label="Valor á receber"
                         ></v-text-field>
                       </v-flex>

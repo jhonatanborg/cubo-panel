@@ -182,6 +182,7 @@
                             outlined
                             required
                             dense
+                            v-mask="['(##) ####-####', '(##) #####-####']"
                             v-model="editedItem.tel"
                           ></v-text-field>
                         </v-col>
@@ -224,6 +225,7 @@
                             outlined
                             label="Nº"
                             required
+                            type="number"
                           ></v-text-field>
                         </v-col>
 
@@ -256,6 +258,7 @@
                             outlined
                             label="CEP"
                             type="text"
+                            v-mask="['##### - ###']"
                             required
                           ></v-text-field>
                         </v-col>

@@ -256,6 +256,7 @@
                     <v-layout v-if="parcelRemaing != '0.00'">
                       <v-flex xs12 sm8 md8 class="mr-3">
                         <v-text-field
+                          type="number"
                           outlined
                           v-model="receiveValue"
                           small

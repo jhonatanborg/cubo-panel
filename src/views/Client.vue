@@ -177,6 +177,7 @@
                         <v-col cols="12" outlined sm="6">
                           <v-text-field
                             label="Telefone"
+                            v-mask="['(##) ####-####', '(##) #####-####']"
                             persistent-hint
                             outlined
                             required
@@ -195,7 +196,13 @@
                           ></v-select>
                         </v-col>
                         <v-col cols="12" sm="6">
-                          <v-text-field v-model="editedItem.doc" dense outlined label="CPF - CNPJ"></v-text-field>
+                          <v-text-field
+                            v-mask="['###.###.###-##', '##.###.###/####-##']"
+                            v-model="editedItem.doc"
+                            dense
+                            outlined
+                            label="CPF - CNPJ"
+                          ></v-text-field>
                         </v-col>
 
                         <v-col cols="12" sm="6">
@@ -211,11 +218,11 @@
                         </v-col>
                         <v-col cols="12" sm="2" md="2">
                           <v-text-field
+                            type="number"
                             v-model="editedItem.adress.number"
                             dense
                             outlined
                             label="Nº"
-                            type="text"
                             required
                           ></v-text-field>
                         </v-col>
@@ -244,6 +251,7 @@
                         <v-col cols="12" sm="4">
                           <v-text-field
                             v-model="editedItem.adress.cep"
+                            v-mask="['#####-###']"
                             dense
                             outlined
                             label="CEP"
@@ -276,77 +284,76 @@
 </template>
 
 <script>
-import Menu from '../components/Menu';
-import vars from '../plugins/env.local'
-const url = `${vars.host}clientController.php`
+import Menu from "../components/Menu";
+import vars from "../plugins/env.local";
+const url = `${vars.host}clientController.php`;
 export default {
   components: {
-    Menu,
+    Menu
   },
-  created: function () {
+  created: function() {
     // `this` points to the vm instance
-    this.listAllClients()
-    this.unsuccessful()
+    this.listAllClients();
+    this.unsuccessful();
   },
   data: () => ({
     dialog: false,
-    search: '',
+    search: "",
     resumeClient: [
       {
-        contractsActive: '',
-        installments: '',
-        contractsSuccess: '',
-        status: ''
+        contractsActive: "",
+        installments: "",
+        contractsSuccess: "",
+        status: ""
       }
     ],
     components: [],
     clients: [],
     idNumber: Number,
     headers: [
-      { text: 'ID', value: 'id' },
+      { text: "ID", value: "id" },
 
       {
-        text: 'Cliente',
-        align: 'left',
+        text: "Cliente",
+        align: "left",
         sortable: true,
-        value: 'name',
+        value: "name"
       },
-      { text: 'Telefone', value: 'tel' },
-      { text: 'CPF/CNPJ', value: 'doc' },
-      { text: 'Tipo', value: 'type' },
-      { text: 'Status', value: 'status' },
-      { text: 'Ações', value: 'acao', sortable: false },
-
+      { text: "Telefone", value: "tel" },
+      { text: "CPF/CNPJ", value: "doc" },
+      { text: "Tipo", value: "type" },
+      { text: "Status", value: "status" },
+      { text: "Ações", value: "acao", sortable: false }
     ],
     editedIndex: -1,
     client: "",
     editedItem: {
-      id: '',
-      name: '',
-      doc: '',
-      type: '',
-      tel: '',
-      status: '',
+      id: "",
+      name: "",
+      doc: "",
+      type: "",
+      tel: "",
+      status: "",
       adress: {
         street: "",
         district: "",
         number: "",
         cep: "",
-        complement: "",
-      },
+        complement: ""
+      }
     },
     defaultItem: {
-      name: '',
-      doc: '',
-      type: '',
-      tel: '',
+      name: "",
+      doc: "",
+      type: "",
+      tel: "",
       adress: {
-        street: '',
+        street: "",
         district: "",
         number: "",
         cep: "",
-        complement: "",
-      },
+        complement: ""
+      }
     },
     editClient: false,
 
@@ -354,207 +361,202 @@ export default {
       qtdAtivos: 0,
       qtdInativos: 0,
       qtdJuridicos: 0,
-      qtdFisicos: 0,
+      qtdFisicos: 0
     }
-
   }),
   methods: {
-
     getColor(status) {
-      if (status == "Ativo") return 'primary'
-      else if (status == "Inativo") return 'orange'
-      else return 'green'
+      if (status == "Ativo") return "primary";
+      else if (status == "Inativo") return "orange";
+      else return "green";
     },
     listAllClients() {
-      const url = `${vars.host}clientController.php`
-      let formData = new FormData()
-      formData.append('all-clients', 'true')
+      const url = `${vars.host}clientController.php`;
+      let formData = new FormData();
+      formData.append("all-clients", "true");
       fetch(url, {
-        method: 'POST',
+        method: "POST",
         body: formData
-      }).then(resp => {
-        return resp.json()
-      }).then(json => {
-        json.forEach(item => {
-          this.clients.push(item)
-        })
-
-
-        let qtdAtivos = 0
-        let qtdInativos = 0
-        let qtdFisica = 0
-        let qtdJurídica = 0
-        json.forEach(client => {
-          switch (client.type) {
-            case 'Física':
-              qtdFisica++
-              break;
-            case 'Jurídica':
-              qtdJurídica++
-              break;
-            default:
-              break;
-          }
-        });
-        json.forEach(client => {
-          switch (client.status) {
-            case 'Ativo':
-              qtdAtivos++
-              break;
-            case 'Inativo':
-              qtdInativos++
-              break;
-
-            default:
-              break;
-          }
-        });
-
-        this.clientsResume.qtdAtivos = qtdAtivos
-        this.clientsResume.qtdInativos = qtdInativos
-        this.clientsResume.qtdFisicos = qtdFisica
-        this.clientsResume.qtdJuridicos = qtdJurídica
-        var clients = this.clients
-        var ultimo = clients[clients.length - 1];
-        this.idNumber = parseInt(ultimo.id)
       })
+        .then(resp => {
+          return resp.json();
+        })
+        .then(json => {
+          json.forEach(item => {
+            this.clients.push(item);
+          });
+
+          let qtdAtivos = 0;
+          let qtdInativos = 0;
+          let qtdFisica = 0;
+          let qtdJurídica = 0;
+          json.forEach(client => {
+            switch (client.type) {
+              case "Física":
+                qtdFisica++;
+                break;
+              case "Jurídica":
+                qtdJurídica++;
+                break;
+              default:
+                break;
+            }
+          });
+          json.forEach(client => {
+            switch (client.status) {
+              case "Ativo":
+                qtdAtivos++;
+                break;
+              case "Inativo":
+                qtdInativos++;
+                break;
+
+              default:
+                break;
+            }
+          });
+
+          this.clientsResume.qtdAtivos = qtdAtivos;
+          this.clientsResume.qtdInativos = qtdInativos;
+          this.clientsResume.qtdFisicos = qtdFisica;
+          this.clientsResume.qtdJuridicos = qtdJurídica;
+          var clients = this.clients;
+          var ultimo = clients[clients.length - 1];
+          this.idNumber = parseInt(ultimo.id);
+        });
     },
 
     registerClient() {
       if (this.editClient == true) {
-        let form = new FormData()
-        form.append('edit-client', 'true')
-        form.append('id', this.editedItem.id)
-        form.append('name', this.editedItem.name)
-        form.append('tel', this.editedItem.tel)
-        form.append('doc', this.editedItem.doc)
-        form.append('status', this.editedItem.status)
-        form.append('type', this.editedItem.type)
-        form.append('street', this.editedItem.adress.street)
-        form.append('district', this.editedItem.adress.district)
-        form.append('complement', this.editedItem.adress.complement)
-        form.append('number', this.editedItem.adress.number)
-        form.append('cep', this.editedItem.adress.cep)
+        let form = new FormData();
+        form.append("edit-client", "true");
+        form.append("id", this.editedItem.id);
+        form.append("name", this.editedItem.name);
+        form.append("tel", this.editedItem.tel);
+        form.append("doc", this.editedItem.doc);
+        form.append("status", this.editedItem.status);
+        form.append("type", this.editedItem.type);
+        form.append("street", this.editedItem.adress.street);
+        form.append("district", this.editedItem.adress.district);
+        form.append("complement", this.editedItem.adress.complement);
+        form.append("number", this.editedItem.adress.number);
+        form.append("cep", this.editedItem.adress.cep);
         fetch(url, {
-          method: 'POST',
+          method: "POST",
           body: form
-        }).then(resp => {
-          return resp.json()
-        }).then(json => {
-
-          this.dialog = false
-          this.clients = []
-          this.listAllClients()
-          this.dialog = false
         })
-      }
-      else {
-        let form = new FormData()
-        form.append('register-client', 'true')
-        form.append('name', this.editedItem.name)
-        form.append('doc', this.editedItem.doc)
-        form.append('tel', this.editedItem.tel)
-        form.append('type', this.editedItem.type)
-        form.append('status', "Ativo")
-        form.append('street', this.editedItem.adress.street)
-        form.append('district', this.editedItem.adress.district)
-        form.append('number', this.editedItem.adress.number)
-        form.append('cep', this.editedItem.adress.cep)
-        form.append('complement', this.editedItem.adress.complement)
+          .then(resp => {
+            return resp.json();
+          })
+          .then(json => {
+            this.dialog = false;
+            this.clients = [];
+            this.listAllClients();
+            this.dialog = false;
+          });
+      } else {
+        let form = new FormData();
+        form.append("register-client", "true");
+        form.append("name", this.editedItem.name);
+        form.append("doc", this.editedItem.doc);
+        form.append("tel", this.editedItem.tel);
+        form.append("type", this.editedItem.type);
+        form.append("status", "Ativo");
+        form.append("street", this.editedItem.adress.street);
+        form.append("district", this.editedItem.adress.district);
+        form.append("number", this.editedItem.adress.number);
+        form.append("cep", this.editedItem.adress.cep);
+        form.append("complement", this.editedItem.adress.complement);
         fetch(url, {
-          method: 'POST',
+          method: "POST",
           body: form
-        }).then(resp => {
-          return resp.json()
-        }).then(json => {
-          this.clients = []
-          this.listAllClients()
-          this.dialog = false
-
-
         })
+          .then(resp => {
+            return resp.json();
+          })
+          .then(json => {
+            this.clients = [];
+            this.listAllClients();
+            this.dialog = false;
+          });
       }
     },
 
     editItem(item) {
-      this.editClient = true
-      this.editedIndex = this.clients.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      const url = `${vars.host}contractController.php`
-      let formData = new FormData()
-      formData.append('all-contracts', 'true')
-      formData.append('client-id', this.editedItem.id)
+      this.editClient = true;
+      this.editedIndex = this.clients.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      const url = `${vars.host}contractController.php`;
+      let formData = new FormData();
+      formData.append("all-contracts", "true");
+      formData.append("client-id", this.editedItem.id);
       fetch(url, {
-        method: 'POST',
+        method: "POST",
         body: formData
-      }).then(resp => {
-        return resp.json()
-      }).then(json => {
-
-        let qtdOpens = 0
-        let qtdCloses = 0
-        let quantityInstallments = 0
-        let clientStatus
-        json.forEach(item => {
-          if (item.status == 'ABERTO')
-            qtdOpens++
-        })
-        json.forEach(item => {
-          if (item.status == 'FECHADO')
-            qtdCloses++
-        })
-        json.forEach(item => {
-          if (item.installments)
-            item.installments.forEach(item2 => {
-              if (item2.status == 'PENDENTE')
-                quantityInstallments++
-            })
-        })
-        json.forEach(item => {
-          if (item.client)
-            clientStatus = item.client.status
-        })
-        this.resumeClient.contractsActive = qtdOpens
-        this.resumeClient.contractsSuccess = qtdCloses
-        this.resumeClient.installments = quantityInstallments
-        this.resumeClient.status = clientStatus
-
-        this.dialog = true
       })
+        .then(resp => {
+          return resp.json();
+        })
+        .then(json => {
+          let qtdOpens = 0;
+          let qtdCloses = 0;
+          let quantityInstallments = 0;
+          let clientStatus;
+          json.forEach(item => {
+            if (item.status == "ABERTO") qtdOpens++;
+          });
+          json.forEach(item => {
+            if (item.status == "FECHADO") qtdCloses++;
+          });
+          json.forEach(item => {
+            if (item.installments)
+              item.installments.forEach(item2 => {
+                if (item2.status == "PENDENTE") quantityInstallments++;
+              });
+          });
+          json.forEach(item => {
+            if (item.client) clientStatus = item.client.status;
+          });
+          this.resumeClient.contractsActive = qtdOpens;
+          this.resumeClient.contractsSuccess = qtdCloses;
+          this.resumeClient.installments = quantityInstallments;
+          this.resumeClient.status = clientStatus;
+
+          this.dialog = true;
+        });
     },
     close() {
-      this.editClient = false
-      this.dialog = false
+      this.editClient = false;
+      this.dialog = false;
       setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      }, 300)
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      }, 300);
     },
     unsuccessful() {
-      const url = `${vars.host}parcelController.php`
-      let formData = new FormData()
-      formData.append('unsuccessful', 'true')
+      const url = `${vars.host}parcelController.php`;
+      let formData = new FormData();
+      formData.append("unsuccessful", "true");
       fetch(url, {
-        method: 'POST',
+        method: "POST",
         body: formData
-      }).then(resp => {
-        return resp.json()
-      }).then(json => {
-
       })
+        .then(resp => {
+          return resp.json();
+        })
+        .then(json => {});
     },
     editStatusSend() {
-      if (this.editedItem.status == 'Ativo') {
-        this.editStatus = false
-        return this.editedItem.status = 'Inativo'
-      } else if (this.editedItem.status == 'Inativo') {
-        this.editStatus = false
-        return this.editedItem.status = 'Ativo'
+      if (this.editedItem.status == "Ativo") {
+        this.editStatus = false;
+        return (this.editedItem.status = "Inativo");
+      } else if (this.editedItem.status == "Inativo") {
+        this.editStatus = false;
+        return (this.editedItem.status = "Ativo");
       }
     }
-  },
-
-}
+  }
+};
 </script>
 
 <style>

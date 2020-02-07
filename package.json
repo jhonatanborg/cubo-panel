@@ -1,17 +1,38 @@
 {
   "name": "cubo-panel",
   "version": "0.1.0",
+  "author": {
+    "name": "Vedas Sistemas"
+  },
+  "description": "Aplicativo de Cobrança",
+  "repository": {
+    "directory": "app-cobranca-electron",
+    "url": "https://github.com/fernandes-dev/app-cobranca-electron",
+    "type": "public"
+  },
+  "icon": "src/icone.ico",
+  "win": {
+    "icon": "src/icone.ico"
+  },
   "private": true,
   "scripts": {
+    "electron:generate-icons": "electron-icon-builder --input=./public/icon.png --output=build --flatten",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "electron:build": "vue-cli-service electron:build",
+    "electron:serve": "vue-cli-service electron:serve",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps"
   },
+  "main": "background.js",
   "dependencies": {
     "core-js": "^3.4.4",
+    "electron-updater": "^4.2.0",
     "register-service-worker": "^1.6.2",
     "vue": "^2.6.10",
     "vue-router": "^3.1.3",
+    "vue-the-mask": "^0.11.1",
     "vuetify": "^2.1.0"
   },
   "devDependencies": {
@@ -21,9 +42,12 @@
     "@vue/cli-plugin-router": "^4.1.0",
     "@vue/cli-service": "^4.1.0",
     "babel-eslint": "^10.0.3",
+    "electron": "^6.0.0",
+    "electron-icon-builder": "^1.0.2",
     "eslint-plugin-vue": "^5.0.0",
     "sass": "^1.19.0",
     "sass-loader": "^8.0.0",
+    "vue-cli-plugin-electron-builder": "^1.4.4",
     "vue-cli-plugin-vuetify": "^2.0.3",
     "vue-template-compiler": "^2.6.10",
     "vuetify-loader": "^1.3.0"

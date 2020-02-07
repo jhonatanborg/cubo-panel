@@ -17,7 +17,7 @@
                 <v-card-text>
                   <v-text-field v-model="user" dense label="Login" type="e-mail" outlined />
                   <v-text-field dense v-model="pass" label="Senha" type="password" outlined />
-                  <v-alert v-show="erroLogin" type="error" :value="true" dense outlined>
+                  <v-alert v-show="erroLogin" :type="feedBack" :value="true" dense outlined>
                     <div class="subtitle">{{msg}}</div>
                   </v-alert>
                   <v-btn
@@ -46,64 +46,79 @@
 </template>
 
 <script>
-import vars from '../plugins/env.local'
-const url = `${vars.host}userController.php`
+import vars from "../plugins/env.local";
+const url = `${vars.host}userController.php`;
 export default {
-  mounted: function () {
+  mounted: function() {
     // this.verifyLogin()
+    this.verifyConection()
+    localStorage.clear()
   },
   data() {
     return {
       loader: null,
       loading: false,
-      user: '',
-      pass: '',
+      user: "",
+      pass: "",
       erroLogin: false,
-      msg: "",
-    }
+      feedBack: 'info',
+      msg: ""
+    };
   },
   watch: {
     loader() {
-      const l = this.loader
-      this[l] = !this[l]
+      const l = this.loader;
+      this[l] = !this[l];
 
-      setTimeout(() => (this[l] = false), 3000)
+      setTimeout(() => (this[l] = false), 3000);
 
-      this.loader = null
-    },
+      this.loader = null;
+    }
   },
   methods: {
-
+    verifyConection() {
+      setInterval(() => {
+        if (!navigator.onLine) {
+          this.msg = "Você está offline! Verifique sua conexão";
+          this.feedBack = 'error'
+          this.erroLogin = true;
+        } else {
+          this.msg = "Pronto para se conectar!  :)";
+          this.feedBack = 'success'
+          this.erroLogin = true;
+        }
+      }, 2000);
+    },
     login() {
-      this.loader = 'loading'
-      let form = new FormData()
-      form.append('login', true)
-      form.append('email', this.user)
-      form.append('pass', this.pass)
+      this.loader = "loading";
+      let form = new FormData();
+      form.append("login", true);
+      form.append("email", this.user);
+      form.append("pass", this.pass);
       fetch(url, {
         method: "POST",
         body: form
-      }).then(resp => {
-        return resp.json()
-      }).then(json => {
-        if (json.status === 'Ativo') {
-          localStorage.setItem('user-name', json.name)
-          localStorage.setItem('user-id', json.userId)
-          localStorage.setItem('boxStatus', json.box_status[1])
-          localStorage.setItem('boxId', json.box_status[0])
-          localStorage.setItem('level', json.level)
-          this.$router.push('home')
-        } else {
-          this.erroLogin = true
-          this.msg = json.msg
-          this.loader = null
-        }
       })
-
+        .then(resp => {
+          return resp.json();
+        })
+        .then(json => {
+          if (json.status === "Ativo") {
+            localStorage.setItem("user-name", json.name);
+            localStorage.setItem("user-id", json.userId);
+            localStorage.setItem("boxStatus", json.box_status[1]);
+            localStorage.setItem("boxId", json.box_status[0]);
+            localStorage.setItem("level", json.level);
+            this.$router.push("home");
+          } else {
+            this.erroLogin = true;
+            this.msg = json.msg;
+            this.loader = null;
+          }
+        });
     }
-  },
-
-}
+  }
+};
 </script>
 
 <style>

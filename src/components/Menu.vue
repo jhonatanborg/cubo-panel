@@ -110,7 +110,9 @@
             <v-divider></v-divider>
           </v-list>
           <div class>
-            <v-text-field v-model="valueBoxOpen" label="Suprimento" outlined dense></v-text-field>
+            <v-text-field 
+            type="number"
+            v-model="valueBoxOpen" label="Suprimento" outlined dense></v-text-field>
           </div>
           <!-- <v-alert v-show="succesAlert" dense text type="info" dismissible>{{msg}}</v-alert>
           <v-alert v-show="errorAlert" dense text type="error" dismissible>{{msg}}</v-alert>-->

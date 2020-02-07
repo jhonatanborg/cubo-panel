@@ -87,6 +87,7 @@
               <v-text-field
                 v-model="userEdit.tel"
                 dense
+                v-mask="['(##) ####-####', '(##) #####-####']"
                 outlined
                 label="Telefone"
                 type="text"
@@ -152,6 +153,7 @@
               <v-text-field
                 v-model="userObject.tel"
                 dense
+                v-mask="['(##) ####-####', '(##) #####-####']"
                 outlined
                 label="Telefone"
                 type="text"

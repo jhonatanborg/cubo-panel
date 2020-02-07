@@ -181,6 +181,7 @@
                             outlined
                             required
                             dense
+                            v-mask="['(##) ####-####', '(##) #####-####']"
                             v-model="editedItem.tel"
                           ></v-text-field>
                         </v-col>
@@ -195,7 +196,13 @@
                           ></v-select>
                         </v-col>
                         <v-col cols="12" sm="6">
-                          <v-text-field v-model="editedItem.doc" dense outlined label="CPF - CNPJ"></v-text-field>
+                          <v-text-field
+                            v-mask="['###.###.###-##', '##.###.###/####-##']"
+                            v-model="editedItem.doc"
+                            dense
+                            outlined
+                            label="CPF - CNPJ"
+                          ></v-text-field>
                         </v-col>
 
                         <v-col cols="12" sm="6">
@@ -215,8 +222,8 @@
                             dense
                             outlined
                             label="Nº"
-                            type="text"
                             required
+                            type="number"
                           ></v-text-field>
                         </v-col>
 
@@ -248,6 +255,7 @@
                             outlined
                             label="CEP"
                             type="text"
+                            v-mask="['##### - ###']"
                             required
                           ></v-text-field>
                         </v-col>

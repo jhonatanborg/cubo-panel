@@ -156,6 +156,7 @@
                 label="Telefone"
                 type="text"
                 required
+                v-mask="['(##) ####-####', '(##) #####-####']"
               ></v-text-field>
               <v-text-field
                 v-model="userObject.pass"

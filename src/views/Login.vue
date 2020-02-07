@@ -25,6 +25,7 @@
                     :disabled="loading"
                     color="blue"
                     block
+                    dark
                     class="mb-2"
                     @click="login()"
                   >

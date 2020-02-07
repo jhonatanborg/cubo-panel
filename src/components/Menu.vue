@@ -110,7 +110,14 @@
             <v-divider></v-divider>
           </v-list>
           <div class>
-            <v-text-field v-model="valueBoxOpen" label="Suprimento" outlined dense></v-text-field>
+            <v-text-field
+              required
+              v-model="valueBoxOpen"
+              type="number"
+              label="Suprimento"
+              outlined
+              dense
+            ></v-text-field>
           </div>
           <!-- <v-alert v-show="succesAlert" dense text type="info" dismissible>{{msg}}</v-alert>
           <v-alert v-show="errorAlert" dense text type="error" dismissible>{{msg}}</v-alert>-->
@@ -183,7 +190,6 @@
 
 <script>
 import vars from '../plugins/env.local'
-
 export default {
 
   name: "Menu",
@@ -202,6 +208,7 @@ export default {
     // this.levelVerify();
   },
   data: () => ({
+
     feedBackBox: "info",
     alert: false,
     msg: '',

@@ -177,7 +177,6 @@
                         <v-col cols="12" outlined sm="6">
                           <v-text-field
                             label="Telefone"
-                            v-mask="['(##) ####-####', '(##) #####-####']"
                             persistent-hint
                             outlined
                             required
@@ -225,7 +224,6 @@
                             outlined
                             label="Nº"
                             required
-                            type="number"
                           ></v-text-field>
                         </v-col>
 
@@ -253,12 +251,11 @@
                         <v-col cols="12" sm="4">
                           <v-text-field
                             v-model="editedItem.adress.cep"
-                            v-mask="['#####-###']"
+                            v-mask="['##### - ###']"
                             dense
                             outlined
                             label="CEP"
                             type="text"
-                            v-mask="['##### - ###']"
                             required
                           ></v-text-field>
                         </v-col>
@@ -294,7 +291,7 @@ export default {
   components: {
     Menu
   },
-  created: function() {
+  created: function () {
     // `this` points to the vm instance
     this.listAllClients();
     this.unsuccessful();
@@ -547,7 +544,7 @@ export default {
         .then(resp => {
           return resp.json();
         })
-        .then(json => {});
+        .then(json => { });
     },
     editStatusSend() {
       if (this.editedItem.status == "Ativo") {

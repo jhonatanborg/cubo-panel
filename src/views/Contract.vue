@@ -262,7 +262,6 @@
                           small
                           dense
                           flat
-                          type="number"
                           label="Valor á receber"
                         ></v-text-field>
                       </v-flex>
@@ -916,8 +915,10 @@ export default {
             // this.$router.push('home')
             this.loading = false;
             this.getContractsDay()
+            this.newloan = false
           } else {
             this.errorAlert = true;
+
           }
         });
     },

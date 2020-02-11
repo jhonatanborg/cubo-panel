@@ -1,13 +1,20 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, Menu } from 'electron'
+import {
+  app,
+  protocol,
+  BrowserWindow,
+  Menu
+} from 'electron'
 import {
   createProtocol,
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const electron = require('electron')
-import { autoUpdater } from 'electron-updater'
+import {
+  autoUpdater
+} from 'electron-updater'
 
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -16,7 +23,13 @@ let win
 
 Menu.setApplicationMenu(null)
 // Scheme must be registered before the app is ready
-protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: true, standard: true } }])
+protocol.registerSchemesAsPrivileged([{
+  scheme: 'app',
+  privileges: {
+    secure: true,
+    standard: true
+  }
+}])
 
 const path = require('path');
 

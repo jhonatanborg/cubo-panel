@@ -589,6 +589,8 @@ export default {
             // alert(json.msg)
             // this.$router.push('home')
             this.loading = false;
+            this.newloan = false
+
           } else {
             this.errorAlert = true;
           }
